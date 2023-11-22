@@ -14,12 +14,11 @@ class ServerStatusCog(commands.Cog):
 
     # Looking up servers
     @nextcord.slash_command(description='Displays the status of a server.', default_member_permissions=nextcord.Permissions(administrator=True))
-    async def queryserver(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
+    async def queryserver(self, interaction: nextcord.Interaction, host: str, port: int):
         try:
             server_info = await self.asa_protocol.query(host, port)
             embed = self.create_embed(server_info)
-            await channel.send(embed=embed)
-            await interaction.response.send_message(f"Server status sent to {channel.mention}", ephemeral=True)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"Error fetching server status: {e}", ephemeral=True)
 

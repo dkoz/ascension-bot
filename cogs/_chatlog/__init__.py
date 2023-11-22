@@ -6,7 +6,7 @@ from main import RCON_HOST, RCON_PORT, RCON_PASS
 class ChatLogCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = CHANNEL_ID
+        self.channel_id = 1176863538871021569
         self.filters = [
             'Server received, But no response!!',
             'AdminCmd',
