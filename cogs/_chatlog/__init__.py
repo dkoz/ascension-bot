@@ -1,12 +1,12 @@
 import nextcord
 from nextcord.ext import commands, tasks
 from lib.mcrcon import MCRcon
-from main import RCON_HOST, RCON_PORT, RCON_PASS
+from main import RCON_HOST, RCON_PORT, RCON_PASS, CHATLOG_CHANNEL
 
 class ChatLogCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel_id = 1176863538871021569
+        self.channel_id = CHATLOG_CHANNEL
         self.filters = [
             'Server received, But no response!!',
             'AdminCmd',

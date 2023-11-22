@@ -14,7 +14,9 @@ class PlayerIDLogCog(commands.Cog):
     async def log_player_ids(self):
         await self.bot.wait_until_ready()
         new_player_data = await self.get_player_data()
-        self.logged_players.update(new_player_data)
+        for player_name, player_id in new_player_data.items():
+            if player_id not in self.logged_players.values():
+                self.logged_players[player_name] = player_id
         self.save_player_data()
 
     async def get_player_data(self):
