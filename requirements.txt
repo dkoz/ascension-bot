@@ -1,2 +1,7 @@
 nextcord
 python-dotenv
+asyncio
+aiohttp
+aiocache
+base64
+socket
