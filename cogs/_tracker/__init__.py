@@ -12,9 +12,9 @@ class ServerStatusCog(commands.Cog):
         self.epic_api = 'https://api.epicgames.dev'
         self.asa_protocol = AsaProtocol(self.client_id, self.client_secret, self.deployment_id, self.epic_api)
 
-    #Temporary default command until I add task support
-    @nextcord.slash_command(description='Displays the status of the server', default_member_permissions=nextcord.Permissions(administrator=True))
-    async def server_status(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
+    # Looking up servers
+    @nextcord.slash_command(description='Displays the status of a server.', default_member_permissions=nextcord.Permissions(administrator=True))
+    async def queryserver(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
         try:
             server_info = await self.asa_protocol.query(host, port)
             embed = self.create_embed(server_info)
