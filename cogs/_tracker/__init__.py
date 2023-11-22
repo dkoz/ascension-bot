@@ -13,23 +13,24 @@ class ServerStatusCog(commands.Cog):
         self.asa_protocol = AsaProtocol(self.client_id, self.client_secret, self.deployment_id, self.epic_api)
 
     #Temporary default command until I add task support
-    @commands.command(name='serverstatus', help='Displays the status of the server')
-    async def server_status(self, ctx, host: str, port: int, channel: nextcord.TextChannel):
+    @nextcord.slash_command(description='Displays the status of the server', default_member_permissions=nextcord.Permissions(administrator=True))
+    async def server_status(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
         try:
             server_info = await self.asa_protocol.query(host, port)
             embed = self.create_embed(server_info)
             await channel.send(embed=embed)
+            await interaction.response.send_message(f"Server status sent to {channel.mention}", ephemeral=True)
         except Exception as e:
-            await ctx.send(f"Error fetching server status: {e}")
+            await interaction.response.send_message(f"Error fetching server status: {e}", ephemeral=True)
 
     def create_embed(self, server_info):
         embed = nextcord.Embed(title="Server Status", color=nextcord.Color.blue())
         embed.add_field(name="Server Name", value=server_info['name'], inline=False)
         embed.add_field(name="Map", value=server_info['map'], inline=True)
         embed.add_field(name="Players", value=f"{server_info['numplayers']}/{server_info['maxplayers']}", inline=True)
-        embed.add_field(name="Password Protected", value="Yes" if server_info['password'] else "No", inline=True)
-        embed.add_field(name="Connect", value=server_info['connect'], inline=True)
         embed.add_field(name="Latency", value=server_info['ping'], inline=True)
+        embed.add_field(name="Connect", value=server_info['connect'], inline=True)
+        embed.add_field(name="Password", value="Yes" if server_info['password'] else "No", inline=True)
 
         return embed
 

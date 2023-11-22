@@ -22,7 +22,7 @@ class ARKRconCog(commands.Cog):
 
     @arkcmd.subcommand(description="Send a chat message to the ARK server.")
     async def serverchat(self, interaction: nextcord.Interaction, message: str):
-        chat_command = f"ServerChat {message}"  # Modify this if your server uses a different command format
+        chat_command = f"ServerChat {message}"
         with MCRcon(self.rcon_host, self.rcon_password, self.rcon_port) as mcr:
             response = mcr.command(chat_command)
             await interaction.response.send_message(f"Chat message sent: {message}\nServer response: {response}")
