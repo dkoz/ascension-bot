@@ -2,7 +2,6 @@ import nextcord
 from nextcord.ext import commands
 import os
 from dotenv import load_dotenv
-import asyncio
 
 #Load Environment Variables
 load_dotenv()
@@ -28,12 +27,4 @@ for folder in os.listdir("cogs"):
     bot.load_extension(f"cogs.{folder}")
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    if loop.is_closed():
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-    try:
-        loop.run_until_complete(bot.start(bot_token))
-    except KeyboardInterrupt:
-        loop.run_until_complete(bot.close())
-        loop.close()
+    bot.run(bot_token)

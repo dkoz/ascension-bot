@@ -5,7 +5,7 @@ import json
 
 def save_guild_info(guild_id, channel_id, message_id, host, port):
     try:
-        with open('server_info.json', 'r') as f:
+        with open('data/server_info.json', 'r') as f:
             data = json.load(f)
     except FileNotFoundError:
         data = {}
@@ -19,12 +19,12 @@ def save_guild_info(guild_id, channel_id, message_id, host, port):
         }
     }
 
-    with open('server_info.json', 'w') as f:
+    with open('data/server_info.json', 'w') as f:
         json.dump(data, f, indent=4)
 
 def load_guild_info(guild_id):
     try:
-        with open('server_info.json', 'r') as f:
+        with open('data/server_info.json', 'r') as f:
             data = json.load(f)
             return data.get(str(guild_id))
     except FileNotFoundError:
@@ -44,7 +44,7 @@ class MonitorCog(commands.Cog):
         self.update_server_status.start()
 
     # Time before each server querty.
-    @tasks.loop(seconds=5)
+    @tasks.loop(minutes=5)
     async def update_server_status(self):
         for guild in self.bot.guilds:
             guild_info = load_guild_info(guild.id)
@@ -68,6 +68,13 @@ class MonitorCog(commands.Cog):
                     except Exception as e:
                         print(f"Error updating server status for guild {guild.id}: {e}")
 
+    @update_server_status.before_loop
+    async def before_update_server_status(self):
+        await self.bot.wait_until_ready()
+
+    def cog_unload(self):
+        self.update_server_status.cancel()
+    
     @nextcord.slash_command(description='Create looping embed of your server status.', default_member_permissions=nextcord.Permissions(administrator=True))
     async def postserver(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
         try:
