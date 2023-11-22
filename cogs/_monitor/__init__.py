@@ -46,6 +46,7 @@ class MonitorCog(commands.Cog):
     # Time before each server querty.
     @tasks.loop(minutes=5)
     async def update_server_status(self):
+        print(f"Fetching server information.")
         for guild in self.bot.guilds:
             guild_info = load_guild_info(guild.id)
             if guild_info:

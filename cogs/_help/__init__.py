@@ -16,7 +16,8 @@ class HelpCommand(commands.Cog):
             name="**Commands**",
             value='`/help` - Show the help menu you are looking at now.\n'
             '`/about` - Information about the bot.\n'
-            '`/serverstatus` - Displays the status of the server.\n'
+            '`/queryserver` - Queries a server for information.\n'
+            '`/postserver` - Create a live server tracker in selected channel.\n'
             '`/rcon command` - Send a command to the Ark Server.\n'
             '`/rcon serverchat` - Send a chat message to the Ark Server.',
             inline=False

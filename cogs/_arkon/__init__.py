@@ -11,16 +11,16 @@ class ARKRconCog(commands.Cog):
         self.rcon_port = RCON_PORT
 
     @nextcord.slash_command(description="Main ARK server command.", default_member_permissions=nextcord.Permissions(administrator=True))
-    async def arkcmd(self, interaction: nextcord.Interaction):
+    async def arkon(self, interaction: nextcord.Interaction):
         pass
 
-    @arkcmd.subcommand(description="Send a command to the ARK server.")
+    @arkon.subcommand(description="Send a command to the ARK server.")
     async def command(self, interaction: nextcord.Interaction, command: str):
         with MCRcon(self.rcon_host, self.rcon_password, self.rcon_port) as mcr:
             response = mcr.command(command)
             await interaction.response.send_message(f'Response: {response}')
 
-    @arkcmd.subcommand(description="Send a chat message to the ARK server.")
+    @arkon.subcommand(description="Send a chat message to the ARK server.")
     async def serverchat(self, interaction: nextcord.Interaction, message: str):
         chat_command = f"ServerChat {message}"
         with MCRcon(self.rcon_host, self.rcon_password, self.rcon_port) as mcr:
