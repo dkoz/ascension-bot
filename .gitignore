@@ -3,3 +3,4 @@
 *.pyc
 cogs/_parser/*
 *.json
+cogs_dev/*
