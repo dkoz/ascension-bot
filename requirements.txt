@@ -5,3 +5,4 @@ aiohttp
 aiocache
 base64
 socket
+json

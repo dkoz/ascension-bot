@@ -8,16 +8,9 @@ import struct
 import time
 import platform
 
-if platform.system() != "Windows":
-    import signal
-
 
 class MCRconException(Exception):
     pass
-
-
-def timeout_handler(signum, frame):
-    raise MCRconException("Connection timeout error")
 
 
 class MCRcon(object):
@@ -50,8 +43,6 @@ class MCRcon(object):
         self.port = port
         self.tlsmode = tlsmode
         self.timeout = timeout
-        if platform.system() != "Windows":
-            signal.signal(signal.SIGALRM, timeout_handler)
 
     def __enter__(self):
         self.connect()
@@ -61,7 +52,8 @@ class MCRcon(object):
         self.disconnect()
 
     def connect(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        family = socket.getaddrinfo(self.host, self.port)[0][0]
+        self.socket = socket.socket(family, socket.SOCK_STREAM)
 
         # Enable TLS
         if self.tlsmode > 0:
@@ -83,15 +75,14 @@ class MCRcon(object):
             self.socket = None
 
     def _read(self, length):
-        if platform.system() != "Windows":
-            signal.alarm(self.timeout)
+        deadline = time.time() + self.timeout
         data = b""
         while len(data) < length:
+            if time.time() >= deadline:
+                raise MCRconException("Connection timeout error")
+            self.socket.settimeout(deadline - time.time())
             data += self.socket.recv(length - len(data))
-        if platform.system() != "Windows":
-            signal.alarm(0)
         return data
-       
 
     def _send(self, out_type, out_data):
         if self.socket is None:
@@ -171,13 +162,26 @@ def mcrcon_cli():
         try:
             with MCRcon(args.host, password, args.port, args.tlsmode) as mcr:
                 while True:
-                    cmd = input("> ")
-                    if cmd.strip() == "exit":
+                    try:
+                        cmd = input("> ")
+                        cmd = cmd.strip()
+                    except EOFError:
+                        # Quit as EOF (e.g. Ctrl+D) means no more commands
+                        cmd = 'exit'
+                    if cmd == "exit":
                         break
                     else:
                         try:
                             resp = mcr.command(cmd)
-                            print(resp)
+                            if cmd == 'help':
+                                # help returns all commands on single line
+                                # for better readability replace slash '/'
+                                # with newline
+                                resp = resp.split('/')
+                                resp = sorted(resp)
+                                print('\n'.join(resp))
+                            else:
+                                print(resp)
                         except (ConnectionResetError, ConnectionAbortedError):
                             print(
                                 "The connection was terminated, the server may have been stopped."

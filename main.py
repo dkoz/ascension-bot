@@ -20,7 +20,7 @@ bot = commands.Bot(command_prefix=bot_prefix, intents=intents)
 #No need to edit anything below here
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
+    print(f'We have logged in as {bot.user}, created by koz')
     activity = nextcord.Game(name="Playing Ark")
     await bot.change_presence(activity=activity)
     

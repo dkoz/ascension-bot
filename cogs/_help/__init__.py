@@ -13,13 +13,22 @@ class HelpCommand(commands.Cog):
         embed.set_footer(text="Created by Koz", icon_url=bot_avatar_url)
 
         embed.add_field(
-            name="**Commands**",
+            name="**Default Commands**",
             value='`/help` - Show the help menu you are looking at now.\n'
             '`/about` - Information about the bot.\n'
             '`/queryserver` - Queries a server for information.\n'
             '`/postserver` - Create a live server tracker in selected channel.\n'
-            '`/rcon command` - Send a command to the Ark Server.\n'
-            '`/rcon serverchat` - Send a chat message to the Ark Server.',
+            '`/arkon command` - Send a command to the Ark Server.\n'
+            '`/arkon serverchat` - Send a chat message to the Ark Server.\n',
+            inline=False
+        )
+
+        embed.add_field(
+            name="**Profile Commands**",
+            value='`/link` - Link your `SteamID` or `EOS ID` to the bot. \n'
+            '`/me` - Shows you profile with link information.\n'
+            '`/unlink` - Remove your data from the bot.\n'
+            '`/find` - Search the bots database for your `EOS ID`',
             inline=False
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
