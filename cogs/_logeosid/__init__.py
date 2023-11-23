@@ -30,13 +30,13 @@ class PlayerIDLogCog(commands.Cog):
             return {}
 
     def extract_player_data(self, response):
-        # I really hope this works properly.
         lines = response.split("\n")
         player_data = {}
         for line in lines:
             parts = line.split(", ")
             if len(parts) == 2:
-                player_name = parts[0].strip()
+                # Split the player name part by space and take the last part to exclude the number
+                player_name = parts[0].split()[-1].strip()
                 player_id = parts[1].strip()
                 player_data[player_name] = player_id
         return player_data

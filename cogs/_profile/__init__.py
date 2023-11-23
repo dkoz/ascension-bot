@@ -1,0 +1,110 @@
+import json
+import nextcord
+from nextcord.ext import commands
+
+class LinkAccountCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.linked_accounts = self.load_linked_accounts()
+        self.player_data = self.load_player_data()
+
+    @nextcord.slash_command(description="Link your Discord account with your EOS and/or Steam IDs.")
+    async def link(self, interaction: nextcord.Interaction, eos_id: str = None, steam_id: str = None):
+        if not eos_id and not steam_id:
+            await interaction.response.send_message("Please provide at least one ID (EOS or Steam).", ephemeral=True)
+            return
+
+        user_id = str(interaction.user.id)
+        self.linked_accounts[user_id] = {}
+        if eos_id:
+            self.linked_accounts[user_id]["eos_id"] = eos_id
+        if steam_id:
+            self.linked_accounts[user_id]["steam_id"] = steam_id
+
+        self.save_linked_accounts()
+        await interaction.response.send_message("Your IDs have been linked!", ephemeral=True)
+
+    # Just for the sake of GDPR
+    @nextcord.slash_command(description="Erase your linked EOS and/or Steam IDs.")
+    async def unlink(self, interaction: nextcord.Interaction):
+        user_id = str(interaction.user.id)
+        if user_id in self.linked_accounts:
+            del self.linked_accounts[user_id]
+            self.save_linked_accounts()
+            await interaction.response.send_message("Your linked profile has been erased.", ephemeral=True)
+        else:
+            await interaction.response.send_message("You do not have a linked profile.", ephemeral=True)
+
+    @nextcord.slash_command(description="Display your linked EOS and/or Steam IDs.")
+    async def me(self, interaction: nextcord.Interaction):
+        user_id = str(interaction.user.id)
+        if user_id in self.linked_accounts:
+            account_info = self.linked_accounts[user_id]
+            embed = nextcord.Embed(title=f"{interaction.user.name}'s Profile", color=nextcord.Color.blue())
+            embed.set_thumbnail(url=interaction.user.avatar.url)
+            embed.add_field(name="Discord Name", value=interaction.user.name, inline=False)
+
+            if "eos_id" in account_info:
+                embed.add_field(name="EOS ID", value=account_info["eos_id"], inline=False)
+            if "steam_id" in account_info:
+                embed.add_field(name="Steam ID", value=account_info["steam_id"], inline=False)
+
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("You have not linked any IDs.", ephemeral=True)
+
+    @nextcord.slash_command(description="Find a player's EOS ID by their name.")
+    async def find(self, interaction: nextcord.Interaction, player_name: str):
+        full_name, eos_id = self.find_player_id(player_name)
+        if eos_id:
+            await interaction.response.send_message(f"EOS ID for {full_name}: {eos_id}")
+        else:
+            await interaction.response.send_message(f"No EOS ID found for {player_name}.", ephemeral=True)
+
+    @find.on_autocomplete("player_name")
+    async def autocomplete_player_name(self, interaction: nextcord.Interaction, option_value: str):
+        if not option_value:
+            return []
+
+        player_data = self.load_player_data()
+
+        search_term = option_value.lower()
+        matching_names = []
+        for name in player_data.keys():
+            if search_term in name.lower():
+                matching_names.append(name)
+
+        matching_names = matching_names[:25]
+
+        await interaction.response.send_autocomplete(matching_names)
+
+
+    def find_player_id(self, player_name):
+        for key, value in self.player_data.items():
+            if player_name.lower() in key.lower():
+                return key, value
+        return None, None
+
+    def load_player_data(self):
+        try:
+            with open('data/player_data.json', 'r') as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return {}
+
+    def save_linked_accounts(self):
+        with open('data/linked_accounts.json', 'w') as file:
+            json.dump(self.linked_accounts, file, indent=4)
+
+    def load_linked_accounts(self):
+        try:
+            with open('data/linked_accounts.json', 'r') as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return {}
+
+    def cog_unload(self):
+        self.save_linked_accounts()
+
+def setup(bot):
+    bot.add_cog(LinkAccountCog(bot))
