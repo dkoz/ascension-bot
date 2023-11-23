@@ -90,12 +90,14 @@ class MonitorCog(commands.Cog):
     # Weird embed, it does need updating.
     def create_embed(self, server_info):
         embed = nextcord.Embed(title="Server Status", color=nextcord.Color.blue())
-        embed.add_field(name="Server Name", value=server_info['name'], inline=False)
+        embed.add_field(name=server_info['name'], value="", inline=False)
         embed.add_field(name="Map", value=server_info['map'], inline=True)
         embed.add_field(name="Players", value=f"{server_info['numplayers']}/{server_info['maxplayers']}", inline=True)
         embed.add_field(name="Latency", value=server_info['ping'], inline=True)
         embed.add_field(name="Connect", value=server_info['connect'], inline=True)
         embed.add_field(name="Password", value="Yes" if server_info['password'] else "No", inline=True)
+        embed.add_field(name="Last Wipe", value="<t:1698530400:R>", inline=True)
+        embed.set_image(url="https://cdn.cloudflare.steamstatic.com/steam/apps/2399830/header.jpg?t=1699643475")
 
         return embed
 
