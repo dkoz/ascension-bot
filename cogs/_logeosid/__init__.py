@@ -3,12 +3,14 @@ import nextcord
 from nextcord.ext import commands, tasks
 from lib.mcrcon import MCRcon
 from main import RCON_HOST, RCON_PORT, RCON_PASS
+import asyncio
 
 class PlayerIDLogCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logged_players = self.load_player_data()
         self.log_player_ids.start()
+        self.rcon_cooldown = 320
 
     @tasks.loop(seconds=10)
     async def log_player_ids(self):
@@ -27,6 +29,7 @@ class PlayerIDLogCog(commands.Cog):
                 return player_data
         except Exception as e:
             print(f"Error fetching player data: {e}")
+            await asyncio.sleep(self.rcon_cooldown)
             return {}
 
     def extract_player_data(self, response):

@@ -2,6 +2,7 @@ import nextcord
 from nextcord.ext import commands, tasks
 from lib.mcrcon import MCRcon
 from main import RCON_HOST, RCON_PORT, RCON_PASS, CHATLOG_CHANNEL
+import asyncio
 
 class ChatLogCog(commands.Cog):
     def __init__(self, bot):
@@ -20,6 +21,7 @@ class ChatLogCog(commands.Cog):
         self.prefix = 'YourPrefix'
         self.suffix = 'YourSuffix'
         self.get_chat.start()
+        self.rcon_cooldown = 320
 
     @tasks.loop(seconds=1)
     async def get_chat(self):
@@ -33,6 +35,7 @@ class ChatLogCog(commands.Cog):
                 await self.parse_message(response)
         except Exception as error:
             print('Error:', error)
+            await asyncio.sleep(self.rcon_cooldown)
 
     async def parse_message(self, res):
         if "Server received, But no response!!" not in res:
