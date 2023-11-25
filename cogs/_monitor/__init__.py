@@ -1,11 +1,18 @@
 import nextcord
 from nextcord.ext import commands, tasks
 from lib.eos import AsaProtocol
+import os
 import json
 
 def save_guild_info(guild_id, channel_id, message_id, host, port):
+    directory = 'data'
+    filepath = os.path.join(directory, 'server_info.json')
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     try:
-        with open('data/server_info.json', 'r') as f:
+        with open(filepath, 'r') as f:
             data = json.load(f)
     except FileNotFoundError:
         data = {}
@@ -19,17 +26,22 @@ def save_guild_info(guild_id, channel_id, message_id, host, port):
         }
     }
 
-    with open('data/server_info.json', 'w') as f:
+    with open(filepath, 'w') as f:
         json.dump(data, f, indent=4)
 
 def load_guild_info(guild_id):
+    directory = 'data'
+    filepath = os.path.join(directory, 'server_info.json')
+
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
     try:
-        with open('data/server_info.json', 'r') as f:
+        with open(filepath, 'r') as f:
             data = json.load(f)
             return data.get(str(guild_id))
     except FileNotFoundError:
         return None
-
 
 class MonitorCog(commands.Cog):
     def __init__(self, bot):

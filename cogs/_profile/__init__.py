@@ -1,6 +1,7 @@
-import json
 import nextcord
 from nextcord.ext import commands
+import os
+import json
 
 class LinkAccountCog(commands.Cog):
     def __init__(self, bot):
@@ -86,19 +87,37 @@ class LinkAccountCog(commands.Cog):
         return None, None
 
     def load_player_data(self):
+        directory = 'data'
+        filepath = os.path.join(directory, 'player_data.json')
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         try:
-            with open('data/player_data.json', 'r') as file:
+            with open(filepath, 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
             return {}
 
     def save_linked_accounts(self):
-        with open('data/linked_accounts.json', 'w') as file:
+        directory = 'data'
+        filepath = os.path.join(directory, 'linked_accounts.json')
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        with open(filepath, 'w') as file:
             json.dump(self.linked_accounts, file, indent=4)
 
     def load_linked_accounts(self):
+        directory = 'data'
+        filepath = os.path.join(directory, 'linked_accounts.json')
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         try:
-            with open('data/linked_accounts.json', 'r') as file:
+            with open(filepath, 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
             return {}

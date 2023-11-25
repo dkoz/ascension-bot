@@ -1,9 +1,10 @@
-import json
 import nextcord
 from nextcord.ext import commands, tasks
 from lib.mcrcon import MCRcon
 from main import RCON_HOST, RCON_PORT, RCON_PASS
 import asyncio
+import os
+import json
 
 class PlayerIDLogCog(commands.Cog):
     def __init__(self, bot):
@@ -45,14 +46,25 @@ class PlayerIDLogCog(commands.Cog):
         return player_data
 
     def save_player_data(self):
-        with open('data/player_data.json', 'w') as file:
-            # Funky way to make data readable.
+        directory = 'data'
+        filepath = os.path.join(directory, 'player_data.json')
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        with open(filepath, 'w') as file:
             json_string = json.dumps(self.logged_players, indent=4)
             file.write(json_string)
 
     def load_player_data(self):
+        directory = 'data'
+        filepath = os.path.join(directory, 'player_data.json')
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         try:
-            with open('data/player_data.json', 'r') as file:
+            with open(filepath, 'r') as file:
                 return json.load(file)
         except FileNotFoundError:
             return {}
