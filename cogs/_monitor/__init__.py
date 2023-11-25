@@ -17,14 +17,16 @@ def save_guild_info(guild_id, channel_id, message_id, host, port):
     except FileNotFoundError:
         data = {}
 
-    data[str(guild_id)] = {
+    guild_data = data.get(str(guild_id), [])
+    guild_data.append({
         'channel_id': channel_id,
         'message_id': message_id,
         'server': {
             'host': host,
             'port': port
         }
-    }
+    })
+    data[str(guild_id)] = guild_data
 
     with open(filepath, 'w') as f:
         json.dump(data, f, indent=4)
@@ -60,26 +62,27 @@ class MonitorCog(commands.Cog):
     async def update_server_status(self):
         print(f"Fetching server information.")
         for guild in self.bot.guilds:
-            guild_info = load_guild_info(guild.id)
-            if guild_info:
-                channel = self.bot.get_channel(int(guild_info['channel_id']))
-                if channel:
-                    try:
-                        message = await channel.fetch_message(int(guild_info['message_id']))
-                        server_info = await self.asa_protocol.query(guild_info['server']['host'], guild_info['server']['port'])
-                        embed = self.create_embed(server_info)
-                        await message.edit(embed=embed)
-                    except nextcord.NotFound:
-                        # When message is not found, attempt to repost it.
+            guild_info_list = load_guild_info(guild.id)
+            if guild_info_list:
+                for guild_info in guild_info_list:
+                    channel = self.bot.get_channel(int(guild_info['channel_id']))
+                    if channel:
                         try:
+                            message = await channel.fetch_message(int(guild_info['message_id']))
                             server_info = await self.asa_protocol.query(guild_info['server']['host'], guild_info['server']['port'])
                             embed = self.create_embed(server_info)
-                            new_message = await channel.send(embed=embed)
-                            save_guild_info(guild.id, channel.id, new_message.id, guild_info['server']['host'], guild_info['server']['port'])
+                            await message.edit(embed=embed)
+                        except nextcord.NotFound:
+                            # When message is not found, attempt to repost it.
+                            try:
+                                server_info = await self.asa_protocol.query(guild_info['server']['host'], guild_info['server']['port'])
+                                embed = self.create_embed(server_info)
+                                new_message = await channel.send(embed=embed)
+                                save_guild_info(guild.id, channel.id, new_message.id, guild_info['server']['host'], guild_info['server']['port'])
+                            except Exception as e:
+                                print(f"Error reposting server status for guild {guild.id}: {e}")
                         except Exception as e:
-                            print(f"Error reposting server status for guild {guild.id}: {e}")
-                    except Exception as e:
-                        print(f"Error updating server status for guild {guild.id}: {e}")
+                            print(f"Error updating server status for guild {guild.id}: {e}")
 
     @update_server_status.before_loop
     async def before_update_server_status(self):

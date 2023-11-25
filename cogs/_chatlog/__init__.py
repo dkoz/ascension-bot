@@ -12,6 +12,7 @@ class ChatLogCog(commands.Cog):
             'Server received, But no response!!',
             'AdminCmd',
             'Tribe Tamed a',
+            'Tribe ',
             'Tamed a',
             'was killed!',
             'added to the Tribe',
