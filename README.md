@@ -1,4 +1,5 @@
 # Ascension Discord Bot
+![GitHub License](https://img.shields.io/github/license/dkoz/ascension-bot?style=flat-square) ![Discord](https://img.shields.io/discord/802778278200475658?style=flat-square&label=community) ![Discord](https://img.shields.io/discord/1009881575187566632?style=flat-square&label=support)
 Discord bot for Ark: Survival Ascended
 
 This bot was originally developed for the Newbz Evolved community. However, I've decided to make it open source. You are welcome to fork it, contribute to its code, or use it for your own server.
@@ -23,15 +24,15 @@ This bot was originally developed for the Newbz Evolved community. However, I've
 # Installation (Linux)
 >Requires Python 3.10+
 
-1. Create a new user and switch to it.
+1. Create a new user and switch to it.a
 ```
-sudo adduser arkon
-su - arkon
+sudo adduser ascension
+su - ascension
 ```
 2. Clone the Arkon bot repository with the following commands
 ```
-git clone https://github.com/dkoz/arkon
-cd arkon
+git clone https://github.com/dkoz/ascension-bot
+cd ascension-bot
 ```
 3. Now you need to create a virtual env and install the requirements.
 ```
