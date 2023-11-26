@@ -17,10 +17,9 @@ class ChatLogCog(commands.Cog):
             'was killed!',
             'added to the Tribe',
             'RichColor',
-            'RCON: Not connected'
+            'RCON: Not connected',
+            'froze'
         ]
-        self.prefix = 'YourPrefix'
-        self.suffix = 'YourSuffix'
         self.get_chat.start()
         self.rcon_cooldown = 320
 
@@ -48,7 +47,7 @@ class ChatLogCog(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.channel.id != self.channel_id:
             return
-        command = f"ChatLogAppend {self.prefix}{message.author.display_name}: {message.content} {self.suffix}"
+        command = f"ChatLogAppend {message.author.display_name}: {message.content}"
         await self.send_rcon_command(command)
 
     def cog_unload(self):

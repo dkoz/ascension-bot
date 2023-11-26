@@ -22,10 +22,12 @@ class ARKRconCog(commands.Cog):
 
     @arkon.subcommand(description="Send a chat message to the ARK server.")
     async def serverchat(self, interaction: nextcord.Interaction, message: str):
-        chat_command = f"ServerChat {message}"
+        discord_name = interaction.user.display_name
+        chat_command = f"ServerChat [{discord_name}]: {message}"
+
         with MCRcon(self.rcon_host, self.rcon_password, self.rcon_port) as mcr:
             response = mcr.command(chat_command)
-            await interaction.response.send_message(f"Chat message sent: {message}\nServer response: {response}")
+            await interaction.response.send_message(f"Chat message sent: [{discord_name}]: {message}\nServer response: {response}")
 
 def setup(bot):
     bot.add_cog(ARKRconCog(bot))
