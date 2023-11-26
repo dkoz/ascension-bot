@@ -33,14 +33,16 @@ class HelpCommand(commands.Cog):
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @nextcord.slash_command(description="About my bot")
+
+    # Please do not remove the about me section. I've worked hard on this bot and this is my only requirement.
+    @nextcord.slash_command(description="About Ascension Discord bot for Ark.")
     async def about(self, interaction: nextcord.Interaction):
         bot_avatar_url = self.bot.user.avatar.url
 
-        embed = nextcord.Embed(title="Ark Dev Bot", color=nextcord.Color.blue())
+        embed = nextcord.Embed(title="Ascension Bot", color=nextcord.Color.blue())
         embed.set_footer(text="Created by Koz", icon_url=bot_avatar_url)
-        embed.add_field(name="About", value="Still in development", inline=False)
-        embed.add_field(name="Creator", value="This bot was created by `koz` on Discord. Feel free to add me if you have any questions.", inline=False)
+        embed.add_field(name="About", value="The bot is an open-source project available [here](https://github.com/dkoz/ascension-bot). You can find more info on our readme. I'm always looking for code contributions and support! If there is something wrong with the bot itself, please let me know!", inline=False)
+        embed.add_field(name="Creator", value="This bot was created by [Kozejin](https://kozejin.dev). Feel free to add `koz#1337` on discord if you have any questions.", inline=False)
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 

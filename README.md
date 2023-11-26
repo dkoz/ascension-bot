@@ -1,15 +1,24 @@
-# Arkon Bot
+# Ascension Discord Bot
 Discord bot for Ark: Survival Ascended
 
-Not sure if this will ever be made public.
+This bot was originally developed for the Newbz Evolved community. However, I've decided to make it open source. You are welcome to fork it, contribute to its code, or use it for your own server.
 
 # Features
-- Remote RCON: You can control the server(s) directly from discord.
-- Chat Logging: Option to log in-game chat and commands to the discord.
-- Server Monitor: Created an EOS protocol that queries the EOS API for information on your game server. The information is embeded on a channel of your choice.
-- Query Servers: Just a general way to query game servers under EOS API.
-- Link System: Will allow people to link their EOS IDs and SteamIDs with discord and display it on their profile under the bot.
- - Since there isn't an actual way to search up EOS IDs, I had to create a private database that logs players names/ids then you can utilize the bot to search that database for your EOS information.
+- **Remote RCON**: Control the server(s) directly from Discord.
+- **Chat Logging**: 
+  - Option to log in-game chat and commands to Discord.
+- **Server Monitor**: 
+  - Utilizes an EOS protocol to query the EOS API for information about your game server.
+  - Embeds the information in a Discord channel of your choice.
+- **Query Servers**: 
+  - A general method to query game servers under the EOS API.
+- **Link System**: 
+  - Allows users to link their EOS IDs and SteamIDs with Discord.
+  - Displays linked IDs on their profile under the bot.
+- **EOS ID Search**: 
+  - Since there's no direct way to search EOS IDs, a private database was created.
+  - This database logs player names and IDs.
+  - The bot can be used to search this database for EOS information.
 
 # Installation (Linux)
 >Requires Python 3.10+
