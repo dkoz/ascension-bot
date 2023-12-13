@@ -26,12 +26,14 @@ class AsaProtocol:
 
             result = {
                 'name': attributes.get('CUSTOMSERVERNAME_s', 'Unknown Server'),
+                'nameversion': attributes.get('SESSIONNAMEUPPER_s', 'Unknown Server'),
                 'map': attributes.get('MAPNAME_s', 'Unknown Map'),
                 'password': attributes.get('SERVERPASSWORD_b', False),
                 'numplayers': desired_session.get('totalPlayers', 0),
                 'maxplayers': settings.get('maxPublicPlayers', 0),
                 'connect': attributes.get('ADDRESS_s', '') + ':' + str(port),
                 'ping': attributes.get('EOSSERVERPING_l', "Unknown Ping"),
+                'platform': attributes.get('SERVERPLATFORMTYPE_s', "Unknown Platform"),
                 'raw': desired_session
             }
         except Exception as e:

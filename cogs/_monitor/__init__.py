@@ -1,49 +1,7 @@
 import nextcord
 from nextcord.ext import commands, tasks
 from lib.eos import AsaProtocol
-import os
-import json
-
-def save_guild_info(guild_id, channel_id, message_id, host, port):
-    directory = 'data'
-    filepath = os.path.join(directory, 'server_info.json')
-
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    try:
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-    except FileNotFoundError:
-        data = {}
-
-    guild_data = data.get(str(guild_id), [])
-    guild_data.append({
-        'channel_id': channel_id,
-        'message_id': message_id,
-        'server': {
-            'host': host,
-            'port': port
-        }
-    })
-    data[str(guild_id)] = guild_data
-
-    with open(filepath, 'w') as f:
-        json.dump(data, f, indent=4)
-
-def load_guild_info(guild_id):
-    directory = 'data'
-    filepath = os.path.join(directory, 'server_info.json')
-
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-    try:
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-            return data.get(str(guild_id))
-    except FileNotFoundError:
-        return None
+from lib.monitorlogic import save_info, load_info, update_info
 
 class MonitorCog(commands.Cog):
     def __init__(self, bot):
@@ -62,7 +20,7 @@ class MonitorCog(commands.Cog):
     async def update_server_status(self):
         print(f"Fetching server information.")
         for guild in self.bot.guilds:
-            guild_info_list = load_guild_info(guild.id)
+            guild_info_list = load_info(guild.id)
             if guild_info_list:
                 for guild_info in guild_info_list:
                     channel = self.bot.get_channel(int(guild_info['channel_id']))
@@ -78,7 +36,7 @@ class MonitorCog(commands.Cog):
                                 server_info = await self.asa_protocol.query(guild_info['server']['host'], guild_info['server']['port'])
                                 embed = self.create_embed(server_info)
                                 new_message = await channel.send(embed=embed)
-                                save_guild_info(guild.id, channel.id, new_message.id, guild_info['server']['host'], guild_info['server']['port'])
+                                update_info(guild.id, channel.id, new_message.id, guild_info['server']['host'], guild_info['server']['port'])
                             except Exception as e:
                                 print(f"Error reposting server status for guild {guild.id}: {e}")
                         except Exception as e:
@@ -97,21 +55,20 @@ class MonitorCog(commands.Cog):
             server_info = await self.asa_protocol.query(host, port)
             embed = self.create_embed(server_info)
             message = await channel.send(embed=embed)
-            save_guild_info(interaction.guild_id, channel.id, message.id, host, port)
+            save_info(interaction.guild_id, channel.id, message.id, host, port)
             await interaction.response.send_message(f"Server status sent to {channel.mention}", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"Error fetching server status: {e}", ephemeral=True)
     
     # Weird embed, it does need updating.
     def create_embed(self, server_info):
-        embed = nextcord.Embed(title="Server Status", color=nextcord.Color.blue())
-        embed.add_field(name=server_info['name'], value="", inline=False)
+        embed = nextcord.Embed(title=server_info['nameversion'], color=nextcord.Color.blue())
         embed.add_field(name="Map", value=server_info['map'], inline=True)
         embed.add_field(name="Players", value=f"{server_info['numplayers']}/{server_info['maxplayers']}", inline=True)
         embed.add_field(name="Latency", value=server_info['ping'], inline=True)
         embed.add_field(name="Connect", value=server_info['connect'], inline=True)
         embed.add_field(name="Password", value="Yes" if server_info['password'] else "No", inline=True)
-        embed.add_field(name="Last Wipe", value="<t:1698530400:R>", inline=True)
+        embed.add_field(name="Platform", value=server_info['platform'], inline=True)
         embed.set_image(url="https://cdn.cloudflare.steamstatic.com/steam/apps/2399830/header.jpg?t=1699643475")
 
         return embed
