@@ -29,5 +29,17 @@ class ARKRconCog(commands.Cog):
             response = mcr.command(chat_command)
             await interaction.response.send_message(f"Chat message sent: [{discord_name}]: {message}\nServer response: {response}")
 
+    @arkon.subcommand(description="Get a list of online players.")
+    async def playerlist(self, interaction: nextcord.Interaction):
+        with MCRcon(self.rcon_host, self.rcon_password, self.rcon_port) as mcr:
+            response = mcr.command("ListPlayers")
+            await interaction.response.send_message(f'Online Players: {response}')
+
+    @arkon.subcommand(description="Broadcast a message to all players.")
+    async def broadcast(self, interaction: nextcord.Interaction, message: str):
+        with MCRcon(self.rcon_host, self.rcon_password, self.rcon_port) as mcr:
+            response = mcr.command(f"Broadcast {message}")
+            await interaction.response.send_message(f"Broadcasted message: {message}\nServer response: {response}")
+
 def setup(bot):
     bot.add_cog(ARKRconCog(bot))
