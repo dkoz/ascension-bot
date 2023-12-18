@@ -40,12 +40,14 @@ class AsaProtocol:
             result = {
                 'raw': {'error': str(e)},
                 'name': 'Unknown Server',
+                'nameversion': 'Unknown Server',
                 'map': 'Unknown Map',
                 'password': False,
                 'numplayers': 0,
                 'maxplayers': 0,
                 'connect': f"{host}:{port}",
-                'ping': 'Unknown Ping'
+                'ping': 'Unknown Ping',
+                'platform': 'Unknown Platform'
             }
 
         return result

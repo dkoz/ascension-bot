@@ -12,6 +12,8 @@ class HelpCommand(commands.Cog):
         embed = nextcord.Embed(title="Help Menu", description="List of commands for Ark Dev Bot", color=nextcord.Color.blue())
         embed.set_footer(text="Created by Koz", icon_url=bot_avatar_url)
 
+        # I plan on auto detecting commands, but this bot has a mixture of prefix and slash commands.
+        # If you want it, just look at my evrima discord bot help command.
         embed.add_field(
             name="**Default Commands**",
             value='`/help` - Show the help menu you are looking at now.\n'
@@ -19,7 +21,9 @@ class HelpCommand(commands.Cog):
             '`/queryserver` - Queries a server for information.\n'
             '`/postserver` - Create a live server tracker in selected channel.\n'
             '`/arkon command` - Send a command to the Ark Server.\n'
-            '`/arkon serverchat` - Send a chat message to the Ark Server.\n',
+            '`/arkon serverchat` - Send a chat message to the Ark Server.\n'
+            '`/arkon broadcast` - Send a broadcast to the Ark Server.\n'
+            '`/arkon playerlist` - Display a list of players in the Ark Server.\n',
             inline=False
         )
 
