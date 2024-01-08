@@ -5,7 +5,7 @@ Discord bot for Ark: Survival Ascended
 
 This bot was originally developed for the Newbz Evolved community. However, I've decided to make it open source. You are welcome to fork it, contribute to its code, or use it for your own server.
 
-# Features
+## Features
 - **Remote RCON**: Control the server(s) directly from Discord.
 - **Chat Logging**: 
   - Option to log in-game chat and commands to Discord.
@@ -22,7 +22,7 @@ This bot was originally developed for the Newbz Evolved community. However, I've
   - This database logs player names and IDs.
   - The bot can be used to search this database for EOS information.
 
-# Installation (Linux)
+## Installation (Linux)
 >Requires Python 3.10+
 
 1. Create a new user and switch to it.a
@@ -50,4 +50,23 @@ nano .env
 ```
 python main.py
 ```
+## Server Config
+1. Created a `config.json` inside the data folder.
 
+2. Contents of the `config.json`.
+```
+{
+    "RCON_SERVERS": {
+        "server1": {
+            "RCON_HOST": "127.0.0.1",
+            "RCON_PORT": 27020,
+            "RCON_PASS": "rcon_password"
+        },
+        "server2": {
+            "RCON_HOST": "127.0.0.1",
+            "RCON_PORT": 27015,
+            "RCON_PASS": "rcon_password"
+        }
+    }
+}
+```

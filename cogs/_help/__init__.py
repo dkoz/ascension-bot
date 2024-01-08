@@ -20,7 +20,7 @@ class HelpCommand(commands.Cog):
             '`/about` - Information about the bot.\n'
             '`/queryserver` - Queries a server for information.\n'
             '`/postserver` - Create a live server tracker in selected channel.\n'
-            '`/arkon command` - Send a command to the Ark Server.\n'
+            '`/arkon rcon` - Send a command to the Ark Server.\n'
             '`/arkon serverchat` - Send a chat message to the Ark Server.\n'
             '`/arkon broadcast` - Send a broadcast to the Ark Server.\n'
             '`/arkon playerlist` - Display a list of players in the Ark Server.\n',
@@ -36,7 +36,6 @@ class HelpCommand(commands.Cog):
             inline=False
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
-
 
     # Please do not remove the about me section. I've worked hard on this bot and this is my only requirement.
     @nextcord.slash_command(description="About Ascension Discord bot for Ark.")

@@ -1,12 +1,15 @@
+import json
+import os
 import nextcord
 from nextcord.ext import commands, tasks
+from config import CHATLOG_CHANNEL
 from lib.mcrcon import MCRcon
-from main import RCON_HOST, RCON_PORT, RCON_PASS, CHATLOG_CHANNEL
 import asyncio
 
 class ChatLogCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.load_config()
         self.channel_id = CHATLOG_CHANNEL
         self.filters = [
             'Server received, But no response!!',
@@ -20,35 +23,37 @@ class ChatLogCog(commands.Cog):
             'RCON: Not connected',
             'froze'
         ]
-        self.get_chat.start()
         self.rcon_cooldown = 320
+        self.get_chat.start()
+
+    def load_config(self):
+        config_path = os.path.join('data', 'config.json')
+        with open(config_path) as config_file:
+            config = json.load(config_file)
+            self.servers = config["RCON_SERVERS"]
 
     @tasks.loop(seconds=1)
     async def get_chat(self):
         await self.bot.wait_until_ready()
-        await self.send_rcon_command("GetChat")
+        for server_name in self.servers:
+            await self.send_rcon_command(server_name, "GetChat")
 
-    async def send_rcon_command(self, command):
+    async def send_rcon_command(self, server_name, command):
+        server = self.servers[server_name]
         try:
-            with MCRcon(RCON_HOST, RCON_PASS, RCON_PORT) as mcr:
+            with MCRcon(server["RCON_HOST"], server["RCON_PASS"], server["RCON_PORT"]) as mcr:
                 response = mcr.command(command)
-                await self.parse_message(response)
+                await self.parse_message(server_name, response)
         except Exception as error:
-            print('Error:', error)
+            print(f'Error in {server_name}:', error)
             await asyncio.sleep(self.rcon_cooldown)
 
-    async def parse_message(self, res):
+    async def parse_message(self, server_name, res):
         if "Server received, But no response!!" not in res:
             channel = self.bot.get_channel(self.channel_id)
             if channel and not any(filter_word in res for filter_word in self.filters):
-                await channel.send(res)
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author.bot or message.channel.id != self.channel_id:
-            return
-        command = f"ChatLogAppend {message.author.display_name}: {message.content}"
-        await self.send_rcon_command(command)
+                formatted_message = f"**[{server_name}]** {res}"
+                await channel.send(formatted_message)
 
     def cog_unload(self):
         self.get_chat.cancel()
