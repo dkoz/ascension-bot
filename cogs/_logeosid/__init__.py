@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext import commands, tasks
 from lib.mcrcon import MCRcon
-from main import RCON_HOST, RCON_PORT, RCON_PASS
+from config import RCON_HOST, RCON_PORT, RCON_PASS
 import asyncio
 import os
 import json

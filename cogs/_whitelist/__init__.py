@@ -1,6 +1,6 @@
 import nextcord
 from nextcord.ext import commands
-from main import whitelist
+from config import whitelist
 
 class WhitelistCog(commands.Cog):
     def __init__(self, bot):
