@@ -69,7 +69,7 @@ class MonitorCog(commands.Cog):
         embed.add_field(name="Connect", value=server_info['connect'], inline=True)
         embed.add_field(name="Password", value="Yes" if server_info['password'] else "No", inline=True)
         embed.add_field(name="Platform", value=server_info['platform'], inline=True)
-        embed.set_image(url="https://cdn.cloudflare.steamstatic.com/steam/apps/2399830/header.jpg?t=1699643475")
+        #embed.set_image(url="https://cdn.cloudflare.steamstatic.com/steam/apps/2399830/header.jpg?t=1699643475")
 
         return embed
 

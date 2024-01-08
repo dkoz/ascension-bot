@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 
 #Load Environment Variables
 load_dotenv()
-bot_token = os.getenv("BOT_TOKEN")
-bot_prefix = os.getenv("BOT_PREFIX")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_PREFIX = os.getenv("BOT_PREFIX")
 RCON_HOST = os.getenv("RCON_HOST")
 RCON_PORT = int(os.getenv("RCON_PORT"))
 RCON_PASS = os.getenv("RCON_PASS")
