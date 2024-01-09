@@ -9,24 +9,20 @@ class LinkAccountCog(commands.Cog):
         self.linked_accounts = self.load_linked_accounts()
         self.player_data = self.load_player_data()
 
-    @nextcord.slash_command(description="Link your Discord account with your EOS and/or Steam IDs.")
-    async def link(self, interaction: nextcord.Interaction, eos_id: str = None, steam_id: str = None):
-        if not eos_id and not steam_id:
-            await interaction.response.send_message("Please provide at least one ID (EOS or Steam).", ephemeral=True)
+    @nextcord.slash_command(description="Link your Discord account with your EOS ID.")
+    async def link(self, interaction: nextcord.Interaction, eos_id: str = None):
+        if not eos_id:
+            await interaction.response.send_message("Please provide your EOS ID.", ephemeral=True)
             return
 
         user_id = str(interaction.user.id)
-        self.linked_accounts[user_id] = {}
-        if eos_id:
-            self.linked_accounts[user_id]["eos_id"] = eos_id
-        if steam_id:
-            self.linked_accounts[user_id]["steam_id"] = steam_id
+        self.linked_accounts[user_id] = {"eos_id": eos_id}
 
         self.save_linked_accounts()
-        await interaction.response.send_message("Your IDs have been linked!", ephemeral=True)
+        await interaction.response.send_message("Your EOS ID has been linked!", ephemeral=True)
 
     # Just for the sake of GDPR
-    @nextcord.slash_command(description="Erase your linked EOS and/or Steam IDs.")
+    @nextcord.slash_command(description="Erase your linked EOS ID.")
     async def unlink(self, interaction: nextcord.Interaction):
         user_id = str(interaction.user.id)
         if user_id in self.linked_accounts:
@@ -36,7 +32,7 @@ class LinkAccountCog(commands.Cog):
         else:
             await interaction.response.send_message("You do not have a linked profile.", ephemeral=True)
 
-    @nextcord.slash_command(description="Display your linked EOS and/or Steam IDs.")
+    @nextcord.slash_command(description="Display your linked EOS ID.")
     async def me(self, interaction: nextcord.Interaction):
         user_id = str(interaction.user.id)
         if user_id in self.linked_accounts:
@@ -47,8 +43,6 @@ class LinkAccountCog(commands.Cog):
 
             if "eos_id" in account_info:
                 embed.add_field(name="EOS ID", value=account_info["eos_id"], inline=False)
-            if "steam_id" in account_info:
-                embed.add_field(name="Steam ID", value=account_info["steam_id"], inline=False)
 
             await interaction.response.send_message(embed=embed)
         else:
@@ -78,7 +72,6 @@ class LinkAccountCog(commands.Cog):
         matching_names = matching_names[:25]
 
         await interaction.response.send_autocomplete(matching_names)
-
 
     def find_player_id(self, player_name):
         for key, value in self.player_data.items():
