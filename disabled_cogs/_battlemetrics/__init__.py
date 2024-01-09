@@ -7,19 +7,27 @@ import os
 class BattleMetricsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config_file = "data/battlemetrics.json"
+        self.config_file = "battlemetrics.json"
         self.servers = self.load_config()
         self.update_server_info.start()
-        self.bot.loop.create_task(self.update_servers())
 
     def load_config(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file, "r") as file:
+        directory = 'data'
+        filepath = os.path.join(directory, self.config_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        try:
+            with open(filepath, 'r') as file:
                 return json.load(file)
-        return {}
+        except FileNotFoundError:
+            return {}
 
     def save_config(self):
-        with open(self.config_file, "w") as file:
+        directory = 'data'
+        filepath = os.path.join(directory, self.config_file)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(filepath, 'w') as file:
             json.dump(self.servers, file, indent=4)
 
     async def send_debug_message(self, message):
@@ -27,17 +35,18 @@ class BattleMetricsCog(commands.Cog):
         if debug_channel:
             await debug_channel.send(message)
 
-    async def update_servers(self):
-        for guild_id, servers in self.servers.items():
-            guild = self.bot.get_guild(guild_id)
-            if not guild:
-                continue
-
+    @tasks.loop(minutes=5)
+    async def update_server_info(self):
+        await self.bot.wait_until_ready()
+        for guild in self.bot.guilds:
+            servers = self.servers.get(str(guild.id), [])
             for server in servers:
+                channel = self.bot.get_channel(server['discord_channel_id'])
+                if channel is None:
+                    continue
                 try:
                     bmapi = battlemetrics
                     await bmapi.setup(server['bearer_token'])
-
                     response = await bmapi.server_info(server['battlemetrics_server_id'])
                     if 'data' in response:
                         server_info = response['data']['attributes']
@@ -69,32 +78,18 @@ class BattleMetricsCog(commands.Cog):
                         else:
                             embed.add_field(name="Mods", value="No mod information available", inline=False)
 
-                        channel = self.bot.get_channel(server['discord_channel_id'])
-                        if channel is None:
-                            await self.send_debug_message(f"Channel ID {server['discord_channel_id']} not found.")
-                            continue
-
-                        try:
-                            if server.get('message_id'):
-                                try:
-                                    message = await channel.fetch_message(server['message_id'])
-                                    await message.edit(embed=embed)
-                                except nextcord.NotFound:
-                                    await self.send_debug_message(f"Message ID {server['message_id']} not found. Sending new message.")
-                                    message = await channel.send(embed=embed)
-                                    server['message_id'] = message.id
-                            else:
+                        if server.get('message_id'):
+                            try:
+                                message = await channel.fetch_message(server['message_id'])
+                                await message.edit(embed=embed)
+                            except nextcord.NotFound:
                                 message = await channel.send(embed=embed)
                                 server['message_id'] = message.id
-                        except Exception as e:
-                            await self.send_debug_message(f"Error sending message in channel {server['discord_channel_id']}: {e}")
-
+                        else:
+                            message = await channel.send(embed=embed)
+                            server['message_id'] = message.id
                 except Exception as e:
-                    await self.send_debug_message(f"Error updating server info for guild {guild_id}: {e}")
-
-    @tasks.loop(minutes=1)
-    async def update_server_info(self):
-        await self.update_servers()
+                    continue
                         
     @commands.command()
     @commands.guild_only()
