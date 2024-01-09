@@ -111,11 +111,10 @@ class BattleMetricsCog(commands.Cog):
         self.save_config()
         await ctx.send("Server configuration added.")
             
-    @commands.command()
+    @commands.command(description="Displays information about a specified game server.")
     @commands.guild_only()
     @commands.is_owner()
     async def rcon(self, ctx, server_id: str, *, command: str):
-        """Sends an RCON command to the specified server."""
         bmapi = battlemetrics
 
         servers = await self.config.guild(ctx.guild).servers()
@@ -135,11 +134,10 @@ class BattleMetricsCog(commands.Cog):
             result_message = f"Successfully ran the command!\n**RESULTS**\n{response['data']['attributes']['result']}"
             await ctx.send(result_message)
 
-    @commands.command()
+    @commands.command(description="Displays information about a specified game server.")
     @commands.guild_only()
     @commands.is_owner()
     async def banlist(self, ctx, battlemetrics_server_id: str):
-        """Fetches and displays the ban list for the specified server."""
         servers = await self.config.guild(ctx.guild).servers()
         server_config = next((s for s in servers if s['battlemetrics_server_id'] == battlemetrics_server_id), None)
 
@@ -165,11 +163,10 @@ class BattleMetricsCog(commands.Cog):
         except Exception as e:
             await ctx.send(f"Error fetching ban list: {e}")
             
-    @commands.command()
+    @commands.command(description="Clears all server configurations.")
     @commands.guild_only()
     @commands.is_owner()
     async def clearservers(self, ctx):
-        """Clears all server configurations."""
         await self.config.guild(ctx.guild).servers.set([])
         await ctx.send("All server configurations have been cleared.")
 

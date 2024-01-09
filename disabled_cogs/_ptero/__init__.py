@@ -2,7 +2,6 @@ import nextcord
 from nextcord.ext import commands
 from pydactyl import PterodactylClient
 import logging
-from config import PTERO_API, PTERO_URL, PTERO_WHITELIST
 import os
 from dotenv import load_dotenv
 
@@ -59,7 +58,6 @@ class PterodactylControls(commands.Cog):
 
     @commands.command(description="Displays information about a specified game server.")
     async def info(self, ctx, server_id: str):
-        """ Shows detailed information about a server """
         if not await self.authcheck(ctx):
             return
         try:
