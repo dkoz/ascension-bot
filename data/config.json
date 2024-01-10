@@ -1,0 +1,14 @@
+{
+    "RCON_SERVERS": {
+        "server1": {
+            "RCON_HOST": "127.0.0.1",
+            "RCON_PORT": 27020,
+            "RCON_PASS": "rcon_password"
+        },
+        "server2": {
+            "RCON_HOST": "127.0.0.1",
+            "RCON_PORT": 27015,
+            "RCON_PASS": "rcon_password"
+        }
+    }
+}

@@ -1,6 +1,7 @@
 
 .env
 *.pyc
-cogs/_parser/*
 *.json
 cogs_dev/*
+
+!data/config.json
