@@ -62,19 +62,26 @@ class PterodactylControls(commands.Cog):
             return
         try:
             server_info = api.client.servers.get_server(server_id)
-            if not isinstance(server_info, dict):
-                logging.error(f'Invalid response format: {server_info}')
+            stats = api.client.servers.get_server_utilization(server_id)
+
+            if not isinstance(server_info, dict) or not isinstance(stats, dict):
+                logging.error(f'Invalid response format: {server_info} or {stats}')
                 await ctx.send('Error: Invalid response format from the API.')
                 return
+
+            resources = stats.get('resources', {})
 
             server_details = {
                 "Name": server_info.get('name', 'N/A'),
                 "Status": server_info.get('status', 'Unknown'),
                 "Owner": 'Yes' if server_info.get('server_owner', False) else 'No',
                 "Node": server_info.get('node', 'N/A'),
-                "Memory Limit": f"{server_info['limits'].get('memory', 'N/A')} MB",
-                "Disk Limit": f"{server_info['limits'].get('disk', 'N/A')} MB",
-                "CPU Limit": f"{server_info['limits'].get('cpu', 'N/A')}%"
+                "CPU Usage": f"{resources.get('cpu_absolute', 'N/A')}%",
+                "Memory Usage": f"{resources.get('memory_bytes', 'N/A') / 1024 / 1024:.2f} MB",
+                "Disk Usage": f"{resources.get('disk_bytes', 'N/A') / 1024 / 1024:.2f} MB",
+                "Network RX": f"{resources.get('network_rx_bytes', 'N/A') / 1024:.2f} KB",
+                "Network TX": f"{resources.get('network_tx_bytes', 'N/A') / 1024:.2f} KB",
+                "Uptime": f"{resources.get('uptime', 'N/A')} seconds"
             }
 
             embed = nextcord.Embed(title="Server Details", color=0x00ff00)
