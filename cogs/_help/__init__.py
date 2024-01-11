@@ -1,5 +1,6 @@
 import nextcord
 from nextcord.ext import commands
+from config import BOT_PREFIX
 
 class HelpCommand(commands.Cog):
     def __init__(self, bot):
@@ -35,6 +36,22 @@ class HelpCommand(commands.Cog):
             '`/find` - Search the bots database for your `EOS ID`',
             inline=False
         )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    # This will be used to list commands not available as application slash commands.
+    # Only administators will be able to use this command.
+    @nextcord.slash_command(description="Shows list of available prefix commands", default_member_permissions=nextcord.Permissions(administrator=True))
+    async def prefixhelp(self, interaction: nextcord.Interaction):
+        bot_avatar_url = self.bot.user.avatar.url
+        prefix = BOT_PREFIX
+
+        embed = nextcord.Embed(title="Help Menu", description=f"List of all available commands.", color=nextcord.Color.blue())
+        embed.set_footer(text="Created by Koz", icon_url=bot_avatar_url)
+
+        for command in self.bot.commands:
+            if not command.hidden and command.enabled:
+                embed.add_field(name=f"`{prefix}{command.name}`", value=command.description or "No description", inline=False)
+
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
     # Please do not remove the about me section. I've worked hard on this bot and this is my only requirement.

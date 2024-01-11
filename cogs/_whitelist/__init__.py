@@ -26,8 +26,7 @@ class WhitelistCog(commands.Cog):
             await guild.leave()
             print(f"Left guild: {guild.name} (ID: {guild.id})")
 
-    # Gets the list of guilds, do not touch this code.
-    @commands.command()
+    @commands.command(desription="Get a list of guilds the bot is connected to.")
     @commands.is_owner()
     async def guilds(self, ctx):
         guilds = self.bot.guilds
