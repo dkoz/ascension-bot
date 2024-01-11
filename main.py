@@ -4,7 +4,7 @@ import os
 import config
 
 intents = nextcord.Intents.all()
-bot = commands.Bot(command_prefix=config.BOT_PREFIX, intents=intents)
+bot = commands.Bot(command_prefix=config.BOT_PREFIX, intents=intents, help_command=None)
 
 #No need to edit anything below here
 @bot.event

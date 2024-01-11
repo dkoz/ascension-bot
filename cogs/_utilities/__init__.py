@@ -2,7 +2,7 @@ import nextcord
 from nextcord.ext import commands
 from config import whitelist
 
-class WhitelistCog(commands.Cog):
+class UtilitiesCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -26,16 +26,14 @@ class WhitelistCog(commands.Cog):
             await guild.leave()
             print(f"Left guild: {guild.name} (ID: {guild.id})")
 
-    @commands.command(desription="Get a list of guilds the bot is connected to.")
+    @commands.command(description="Get a list of guilds the bot is connected to.")
     @commands.is_owner()
     async def guilds(self, ctx):
-        guilds = self.bot.guilds
+        embed = nextcord.Embed(title="Connected Guilds", color=0x00ff00)
+        for guild in self.bot.guilds:
+            embed.add_field(name=guild.name, value=f"ID: {guild.id}", inline=False)
 
-        response = "Guilds:\n"
-        for guild in guilds:
-            response += f"- {guild.name} (ID: {guild.id})\n"
-
-        await ctx.send(response)
+        await ctx.send(embed=embed)
 
     @guilds.error
     async def guilds_error(self, ctx, error):
@@ -43,4 +41,4 @@ class WhitelistCog(commands.Cog):
             await ctx.send("This command is restricted to the bot owner.")
 
 def setup(bot):
-    bot.add_cog(WhitelistCog(bot))
+    bot.add_cog(UtilitiesCog(bot))
