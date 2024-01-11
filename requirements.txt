@@ -2,3 +2,4 @@ nextcord
 python-dotenv
 aiohttp
 aiocache
+py-dactyl

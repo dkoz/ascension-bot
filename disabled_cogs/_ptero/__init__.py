@@ -2,15 +2,7 @@ import nextcord
 from nextcord.ext import commands
 from pydactyl import PterodactylClient
 import logging
-import os
-from dotenv import load_dotenv
-
-# Remember to add the following to your .env file
-# You will need to py-dactyl library with pip
-load_dotenv()
-PTERO_API = os.getenv("PTERO_API")
-PTERO_URL = os.getenv("PTERO_URL")
-PTERO_WHITELIST = [int(id.strip()) for id in os.getenv("PTERO_WHITELIST", "").split(",")]
+from config import PTERO_URL, PTERO_API, PTERO_WHITELIST
 
 logging.basicConfig(level=logging.INFO)
 
