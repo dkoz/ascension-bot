@@ -2,7 +2,7 @@ import json
 import os
 import nextcord
 from nextcord.ext import commands
-from lib.mcrcon import MCRcon
+from lib.arkon_async import ArkonClient
 
 class ARKRconCog(commands.Cog):
     def __init__(self, bot):
@@ -20,8 +20,11 @@ class ARKRconCog(commands.Cog):
         if not server:
             return f"Server '{server_name}' not found."
 
-        with MCRcon(server["RCON_HOST"], server["RCON_PASS"], server["RCON_PORT"]) as mcr:
-            return mcr.command(command)
+        try:
+            async with ArkonClient(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
+                return await ac.send(command)
+        except Exception as error:
+            return f"Error sending command: {error}"
 
     async def autocomplete_server(self, interaction: nextcord.Interaction, current: str):
         choices = [server for server in self.servers if current.lower() in server.lower()]

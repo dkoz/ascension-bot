@@ -3,7 +3,7 @@ import os
 import nextcord
 from nextcord.ext import commands, tasks
 from config import CHATLOG_CHANNEL
-from lib.mcrcon import MCRcon
+from lib.arkon_async import ArkonClient
 import asyncio
 
 class ChatLogCog(commands.Cog):
@@ -41,8 +41,8 @@ class ChatLogCog(commands.Cog):
     async def send_rcon_command(self, server_name, command):
         server = self.servers[server_name]
         try:
-            with MCRcon(server["RCON_HOST"], server["RCON_PASS"], server["RCON_PORT"]) as mcr:
-                response = mcr.command(command)
+            async with ArkonClient(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
+                response = await ac.send(command)
                 await self.parse_message(server_name, response)
         except Exception as error:
             print(f'Error in {server_name}:', error)

@@ -74,9 +74,9 @@ class LinkAccountCog(commands.Cog):
         await interaction.response.send_autocomplete(matching_names)
 
     def find_player_id(self, player_name):
-        for key, value in self.player_data.items():
-            if player_name.lower() in key.lower():
-                return key, value
+        player_name = player_name.strip()
+        if player_name in self.player_data:
+            return player_name, self.player_data[player_name]
         return None, None
 
     def load_player_data(self):

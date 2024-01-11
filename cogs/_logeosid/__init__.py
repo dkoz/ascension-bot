@@ -1,6 +1,6 @@
 import nextcord
 from nextcord.ext import commands, tasks
-from lib.mcrcon import MCRcon
+from lib.arkon_async import ArkonClient
 import asyncio
 import os
 import json
@@ -32,8 +32,8 @@ class LogEOSIDCog(commands.Cog):
     async def get_player_data(self, server_name):
         server = self.servers[server_name]
         try:
-            with MCRcon(server["RCON_HOST"], server["RCON_PASS"], server["RCON_PORT"]) as mcr:
-                response = mcr.command("listplayers")
+            async with ArkonClient(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
+                response = await ac.send("listplayers")
                 player_data = self.extract_player_data(response)
                 return player_data
         except Exception as e:
