@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext import commands, tasks
-from lib.eos import AsaProtocol
-from lib.monitorlogic import save_info, load_info, update_info
+from util.eos import AsaProtocol
+from util.monitorlogic import save_info, load_info, update_info
 
 class MonitorCog(commands.Cog):
     def __init__(self, bot):

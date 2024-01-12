@@ -1,7 +1,7 @@
 import json
 import nextcord
 from nextcord.ext import commands
-from lib.slash_cooldown import SlashCooldown
+from util.slash_cooldown import SlashCooldown
 import random
 from .const import work_scenario
 from . import gambling

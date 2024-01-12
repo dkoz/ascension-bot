@@ -1,6 +1,6 @@
 import nextcord
 from nextcord.ext import commands, tasks
-from lib.arkon_async import ArkonClient
+from util.arkon_async import ArkonClient
 import asyncio
 import os
 import json

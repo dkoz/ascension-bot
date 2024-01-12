@@ -1,6 +1,6 @@
 import nextcord
 from nextcord.ext import commands
-from lib.eos import AsaProtocol
+from util.eos import AsaProtocol
 
 class ServerStatusCog(commands.Cog):
     def __init__(self, bot):

@@ -2,7 +2,7 @@ import json
 import os
 import nextcord
 from nextcord.ext import commands
-from lib.arkon_async import ArkonClient
+from util.arkon_async import ArkonClient
 
 class ARKRconCog(commands.Cog):
     def __init__(self, bot):
