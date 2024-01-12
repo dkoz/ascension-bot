@@ -10,12 +10,13 @@ class TicketSystem(commands.Cog):
         self.data_folder = 'data'
         self.config_file = os.path.join(self.data_folder, 'tickets.json')
         self.data = self.load_config()
+        self.bot.loop.create_task(self.setup_buttons())
 
     def load_config(self):
         if not os.path.exists(self.config_file):
             os.makedirs(self.data_folder, exist_ok=True)
             with open(self.config_file, 'w') as f:
-                json.dump({'ticket_channel_id': None, 'log_channel_id': None}, f)
+                json.dump({'ticket_channel_id': None, 'log_channel_id': None, 'buttons': []}, f)
         with open(self.config_file, 'r') as f:
             return json.load(f)
 
@@ -23,31 +24,64 @@ class TicketSystem(commands.Cog):
         with open(self.config_file, 'w') as f:
             json.dump(self.data, f)
 
-    @commands.group(name="tickets", help="Ticket system commands", invoke_without_command=True)
-    async def tickets(self, ctx):
-        embed = nextcord.Embed(title="Ticket System", description="Use the commands below to set up the ticket system.")
-        embed.add_field(name="Setup", value=f"`{ctx.prefix}ticket channel <channel>`\n`{ctx.prefix}ticket logchannel <channel>`")
-        await ctx.send(embed=embed)
+    async def setup_buttons(self):
+        await self.bot.wait_until_ready()
+        if 'buttons' in self.data:
+            for button_info in self.data['buttons']:
+                channel = self.bot.get_channel(button_info['channel_id'])
+                if channel:
+                    try:
+                        message = await channel.fetch_message(button_info['message_id'])
+                    except (nextcord.NotFound, nextcord.HTTPException):
+                        continue
 
-    @tickets.command(name="channel", help="Setup a ticket system in a channel")
+                    view = View()
+                    button = Button(label=button_info['label'], style=nextcord.ButtonStyle(button_info['style']), custom_id=button_info['custom_id'])
+                    button.callback = self.button_callback
+                    view.add_item(button)
+                    await message.edit(view=view)
+
+    @commands.group(name="tickets", invoke_without_command=True)
+    async def tickets(self, ctx):
+        await ctx.send("Use `.tickets channel` to set the ticket channel, `.tickets logchannel` to set the log channel.")
+
+    @tickets.command(name="channel")
     async def setup_ticket(self, ctx, channel: nextcord.TextChannel):
         self.data['ticket_channel_id'] = channel.id
         self.save_config()
-        button = Button(label="Create Ticket", style=nextcord.ButtonStyle.green)
-        button.callback = self.create_ticket_callback
+        button = Button(label="Create Ticket", style=nextcord.ButtonStyle.green, custom_id="create_ticket")
+        button.callback = self.button_callback
         view = View()
         view.add_item(button)
         embed = nextcord.Embed(title="Ticket System", description="Click the button below to create a new ticket.")
-        await channel.send(embed=embed, view=view)
+        message = await channel.send(embed=embed, view=view)
+        # Save button state
+        self.data['buttons'].append({
+            'channel_id': channel.id,
+            'message_id': message.id,
+            'label': button.label,
+            'style': button.style.value,
+            'custom_id': button.custom_id
+        })
+        self.save_config()
         await ctx.send(f"Ticket system set up in {channel.mention}")
 
-    @tickets.command(name="logchannel", help="Set the channel to send ticket logs to")
+    @tickets.command(name="logchannel")
     async def setup_log(self, ctx, channel: nextcord.TextChannel):
         self.data['log_channel_id'] = channel.id
         self.save_config()
-        await ctx.send(f"Ticket logs will be sent to {channel.mention}")
+        await ctx.send(f"Ticket log channel set to {channel.mention}")
 
-    async def create_ticket_callback(self, interaction: nextcord.Interaction):
+    async def button_callback(self, interaction: nextcord.Interaction):
+        custom_id = interaction.data.get('custom_id')
+        if custom_id == "create_ticket":
+            await self.create_ticket(interaction)
+        elif custom_id.startswith("close_ticket_"):
+            thread_id = int(custom_id.split("_")[-1])
+            thread = await self.bot.fetch_channel(thread_id)
+            await self.close_ticket(interaction, thread)
+
+    async def create_ticket(self, interaction: nextcord.Interaction):
         member = interaction.user
         ticket_channel_id = self.data.get('ticket_channel_id')
         if ticket_channel_id:
@@ -67,17 +101,38 @@ class TicketSystem(commands.Cog):
                     view.add_item(Button(label="Go to Ticket", style=nextcord.ButtonStyle.link, url=thread.jump_url))
                     await log_channel.send(embed=embed, view=view)
 
-            close_button = Button(label="Close Ticket", style=nextcord.ButtonStyle.red)
-            close_button.callback = lambda i: self.close_ticket_callback(i, thread)
+            close_button = Button(label="Close Ticket", style=nextcord.ButtonStyle.red, custom_id=f"close_ticket_{thread.id}")
+            close_button.callback = self.button_callback
             view = View()
             view.add_item(close_button)
             embed = nextcord.Embed(title="Your Ticket", description="Support will be with you shortly. Click the button to close this ticket.")
-            await thread.send(member.mention, embed=embed, view=view)
+            message = await thread.send(member.mention, embed=embed, view=view)
             await interaction.response.send_message("Ticket created!", ephemeral=True)
 
-    async def close_ticket_callback(self, interaction: nextcord.Interaction, thread: nextcord.Thread):
-        await thread.delete()
+            self.data['buttons'].append({
+                'channel_id': thread.id,
+                'message_id': message.id,
+                'label': close_button.label,
+                'style': close_button.style.value,
+                'custom_id': close_button.custom_id
+            })
+            self.save_config()
+
+    async def close_ticket(self, interaction: nextcord.Interaction, thread: nextcord.Thread):
+        member = interaction.user
+        parent_channel = thread.parent
+
+        overwrites = parent_channel.overwrites_for(member)
+        overwrites.send_messages = False
+        overwrites.read_messages = False
+        await parent_channel.set_permissions(member, overwrite=overwrites, reason="Ticket closed")
+
         await interaction.response.send_message("Ticket closed.", ephemeral=True)
+
+        await thread.edit(archived=True, locked=True)
+
+        self.data['buttons'] = [button for button in self.data['buttons'] if button['message_id'] != thread.last_message_id]
+        self.save_config()
 
 def setup(bot):
     bot.add_cog(TicketSystem(bot))
