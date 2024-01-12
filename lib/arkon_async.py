@@ -8,7 +8,6 @@ class InvalidPassword(Exception):
     pass
 
 class ArkonClient:
-
     def __init__(self, host, port, password):
         self.host = host
         self.port = int(port)
@@ -45,7 +44,6 @@ class ArkonClient:
         data = b''
         while len(data) < leng:
             data += await self._reader.read(leng - len(data))
-
         return data
 
     async def _send(self, typen, message):
@@ -73,6 +71,6 @@ class ArkonClient:
     async def send(self, cmd):
         if not self._auth:
             raise ClientError("Client not authenticated.")
+
         result = await self._send(2, cmd)
-        await asyncio.sleep(0.003)
         return result
