@@ -24,6 +24,9 @@ If you need support feel free to join the [discord](https://discord.gg/3HUq8cJSr
   - Since there's no direct way to search EOS IDs, a private database was created.
   - This database logs player names and IDs.
   - The bot can be used to search this database for EOS information.
+- **Ticket System**:
+  - Create a ticket channel that will allow users to click a button to open a ticket as a thread.
+  - Set a log channel where new tickets will be announced to for staff.
 
 ## Installation
 For detailed installation instructions, please refer to our [git wiki](https://github.com/dkoz/ascension-bot/wiki). Specific instructions for [Linux](https://github.com/dkoz/ascension-bot/wiki/Linux-Installation) and [Windows](https://github.com/dkoz/ascension-bot/wiki/Windows-Installation) can be found at their respective links.
