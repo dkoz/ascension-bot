@@ -1,6 +1,7 @@
 import json
 import nextcord
 from nextcord.ext import commands
+from lib.slash_cooldown import SlashCooldown
 import random
 from .const import work_scenario
 from . import gambling
@@ -12,6 +13,8 @@ class EconomyCog(commands.Cog):
         self.currency_name = "Points"
         self.user_balances = self.load_balances()
         self.work_scenarios = work_scenario
+        self.cooldown = SlashCooldown()
+        self.cooldown_seconds = 300
 
     @nextcord.slash_command(name="balance", description="Check your balance.")
     async def balance(self, interaction: nextcord.Interaction):
@@ -23,6 +26,10 @@ class EconomyCog(commands.Cog):
     @nextcord.slash_command(name="work", description="Work to earn some currency.")
     async def work(self, interaction: nextcord.Interaction):
         user_id = str(interaction.user.id)
+
+        if await self.cooldown.apply_cooldown(interaction, user_id, self.cooldown_seconds):
+            return
+
         amount = random.randint(10, 100)
         scenario = random.choice(self.work_scenarios)
         self.user_balances[user_id] = self.user_balances.get(user_id, 0) + amount
@@ -64,7 +71,7 @@ class EconomyCog(commands.Cog):
         elif outcome == False:
             result_msg = f"Dealer wins with {dealer_score} points. You lost {bet} {self.currency_name}."
             self.user_balances[user_id] -= bet
-        else:  # Draw
+        else:
             result_msg = f"It's a draw! Dealer and you both have {player_score} points."
 
         self.save_balances()
