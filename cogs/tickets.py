@@ -43,7 +43,14 @@ class TicketSystem(commands.Cog):
 
     @commands.group(name="tickets", invoke_without_command=True)
     async def tickets(self, ctx):
-        await ctx.send("Use `.tickets channel` to set the ticket channel, `.tickets logchannel` to set the log channel.")
+        prefix = ctx.prefix
+
+        embed = nextcord.Embed(
+            title="Ticket System",
+            description=f"{prefix}tickets channel - Set the ticket channel\n"
+                        f"{prefix}tickets logchannel - Set the log channel."
+        )
+        await ctx.send(embed=embed)
 
     @tickets.command(name="channel")
     async def setup_ticket(self, ctx, channel: nextcord.TextChannel):
@@ -127,7 +134,8 @@ class TicketSystem(commands.Cog):
         overwrites.read_messages = False
         await parent_channel.set_permissions(member, overwrite=overwrites, reason="Ticket closed")
 
-        await interaction.response.send_message("Ticket closed.", ephemeral=True)
+        closing_embed = nextcord.Embed(title="Closed", description="Your ticket has been closed.", color=nextcord.Color.red())
+        await interaction.response.send_message(embed=closing_embed)
 
         await thread.edit(archived=True, locked=True)
 
