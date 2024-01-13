@@ -35,7 +35,7 @@ class TicketSystem(commands.Cog):
                     except (nextcord.NotFound, nextcord.HTTPException):
                         continue
 
-                    view = View()
+                    view = View(timeout=None)
                     button = Button(label=button_info['label'], style=nextcord.ButtonStyle(button_info['style']), custom_id=button_info['custom_id'])
                     button.callback = self.button_callback
                     view.add_item(button)
@@ -58,11 +58,11 @@ class TicketSystem(commands.Cog):
         self.save_config()
         button = Button(label="Create Ticket", style=nextcord.ButtonStyle.green, custom_id="create_ticket")
         button.callback = self.button_callback
-        view = View()
+        view = View(timeout=None)
         view.add_item(button)
         embed = nextcord.Embed(title="Ticket System", description="Click the button below to create a new ticket.")
         message = await channel.send(embed=embed, view=view)
-        # Save button state
+
         self.data['buttons'].append({
             'channel_id': channel.id,
             'message_id': message.id,
@@ -104,13 +104,13 @@ class TicketSystem(commands.Cog):
                     embed.add_field(name="User ID", value=member.id, inline=False)
                     embed.add_field(name="Opened", value=interaction.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
                     embed.add_field(name="Ticket Name", value=thread.name, inline=False)
-                    view = View()
+                    view = View(timeout=None)
                     view.add_item(Button(label="Go to Ticket", style=nextcord.ButtonStyle.link, url=thread.jump_url))
                     await log_channel.send(embed=embed, view=view)
 
             close_button = Button(label="Close Ticket", style=nextcord.ButtonStyle.red, custom_id=f"close_ticket_{thread.id}")
             close_button.callback = self.button_callback
-            view = View()
+            view = View(timeout=None)
             view.add_item(close_button)
             embed = nextcord.Embed(title="Your Ticket", description="Support will be with you shortly. Click the button to close this ticket.")
             message = await thread.send(member.mention, embed=embed, view=view)
