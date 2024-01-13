@@ -67,11 +67,13 @@ class UtilitiesCog(commands.Cog):
         roles = [role.name for role in member.roles[1:]]
 
         embed = nextcord.Embed(title=f"User Information - {member}", color=0x00ff00)
-        embed.add_field(name="Username", value=member.display_name, inline=False)
-        embed.add_field(name="Joined Server", value=member.joined_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
-        embed.add_field(name="Joined Discord", value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
-        embed.add_field(name="Roles", value=", ".join(roles) if roles else "No Roles", inline=False)
+        embed.add_field(name="Username", value=member.display_name, inline=True)
+        embed.add_field(name="User ID", value=member.id, inline=True)
         embed.add_field(name="Status", value=str(member.status).title(), inline=True)
+        embed.add_field(name="Joined Server", value=member.joined_at.strftime("%Y-%m-%d %H:%M:%S"), inline=True)
+        embed.add_field(name="Joined Discord", value=member.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=True)
+        embed.add_field(name="Activity", value=member.activity.name if member.activity else "None", inline=True)
+        embed.add_field(name="Roles", value=", ".join(roles) if roles else "No Roles", inline=False)
         embed.set_thumbnail(url=member.avatar.url if member.avatar else None)
 
         await ctx.send(embed=embed)

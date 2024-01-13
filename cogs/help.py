@@ -1,5 +1,6 @@
 import nextcord
 from nextcord.ext import commands
+from nextcord.ui import Button, View
 from config import BOT_PREFIX
 
 class HelpCommand(commands.Cog):
@@ -62,7 +63,16 @@ class HelpCommand(commands.Cog):
         embed.add_field(name="About", value="The bot is an open-source project available [here](https://github.com/dkoz/ascension-bot). You can find more info on our readme. I'm always looking for code contributions and support! If there is something wrong with the bot itself, please let me know!", inline=False)
         embed.add_field(name="Creator", value="This bot was created by [Kozejin](https://kozejin.dev). Feel free to add `koz#1337` on discord if you have any questions.", inline=False)
 
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        website_button = Button(label="Website", url="https://kozejin.dev", style=nextcord.ButtonStyle.link)
+        github_button = Button(label="GitHub", url="https://github.com/dkoz", style=nextcord.ButtonStyle.link)
+        project_button = Button(label="Project", url="https://github.com/dkoz/ascension-bot", style=nextcord.ButtonStyle.link)
+
+        view = View()
+        view.add_item(website_button)
+        view.add_item(github_button)
+        view.add_item(project_button)
+
+        await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
 
 def setup(bot: commands.Bot):
     bot.add_cog(HelpCommand(bot))

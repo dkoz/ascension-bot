@@ -41,14 +41,14 @@ class TicketSystem(commands.Cog):
                     view.add_item(button)
                     await message.edit(view=view)
 
-    @commands.group(name="tickets", invoke_without_command=True)
+    @commands.group(name="tickets", description="Get list of available tickets commands.",invoke_without_command=True)
     async def tickets(self, ctx):
         prefix = ctx.prefix
 
         embed = nextcord.Embed(
             title="Ticket System",
-            description=f"{prefix}tickets channel - Set the ticket channel\n"
-                        f"{prefix}tickets logchannel - Set the log channel."
+            description=f"`{prefix}tickets channel` - Set the ticket channel\n"
+                        f"`{prefix}tickets logchannel` - Set the log channel."
         )
         await ctx.send(embed=embed)
 
