@@ -1,6 +1,7 @@
 import nextcord
 from nextcord.ext import commands
 from nextcord.ui import Button, View
+from nextcord.ext.commands import has_permissions
 import json
 import os
 
@@ -41,18 +42,20 @@ class TicketSystem(commands.Cog):
                     view.add_item(button)
                     await message.edit(view=view)
 
-    @commands.group(name="tickets", description="Get list of available tickets commands.",invoke_without_command=True)
+    @commands.group(name="tickets", description="Get list of available tickets commands.", invoke_without_command=True)
     async def tickets(self, ctx):
         prefix = ctx.prefix
 
         embed = nextcord.Embed(
             title="Ticket System",
             description=f"`{prefix}tickets channel` - Set the ticket channel\n"
-                        f"`{prefix}tickets logchannel` - Set the log channel."
+                        f"`{prefix}tickets logchannel` - Set the log channel.",
+            color=nextcord.Color.orange()
         )
         await ctx.send(embed=embed)
 
     @tickets.command(name="channel")
+    @has_permissions(manage_channels=True)
     async def setup_ticket(self, ctx, channel: nextcord.TextChannel):
         self.data['ticket_channel_id'] = channel.id
         self.save_config()
@@ -74,6 +77,7 @@ class TicketSystem(commands.Cog):
         await ctx.send(f"Ticket system set up in {channel.mention}")
 
     @tickets.command(name="logchannel")
+    @has_permissions(manage_channels=True)
     async def setup_log(self, ctx, channel: nextcord.TextChannel):
         self.data['log_channel_id'] = channel.id
         self.save_config()

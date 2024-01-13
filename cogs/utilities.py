@@ -78,12 +78,5 @@ class UtilitiesCog(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @guilds.error
-    @serverstats.error
-    @userinfo.error
-    async def guilds_error(self, ctx, error):
-        if isinstance(error, commands.NotOwner):
-            await ctx.send("This command is restricted to the bot owner.")
-
 def setup(bot):
     bot.add_cog(UtilitiesCog(bot))

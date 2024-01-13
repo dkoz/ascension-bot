@@ -16,14 +16,23 @@ async def on_ready():
     await bot.change_presence(activity=activity)
 
 @bot.event
+async def on_guild_join(guild):
+    print(f"Joined guild: {guild.name} (ID: {guild.id})")
+
+@bot.event
+async def on_guild_remove(guild):
+    print(f"Left guild: {guild.name} (ID: {guild.id})")
+
+@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        return
-
-    if isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(f'Missing required argument: {error.param.name}')
+        await ctx.send("Command not found.")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(f"Missing required argument: {error.param.name}")
     elif isinstance(error, commands.CheckFailure):
         await ctx.send("You don't have permission to use this command.")
+    elif isinstance(error, commands.CommandInvokeError) and isinstance(error.original, nextcord.Forbidden):
+        await ctx.send("I lack the necessary permissions to perform this action.")
     else:
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

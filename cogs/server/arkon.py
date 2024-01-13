@@ -31,7 +31,7 @@ class ARKRconCog(commands.Cog):
         await interaction.response.send_autocomplete(choices)
     
     @nextcord.slash_command(description="Main ARK server command.", default_member_permissions=nextcord.Permissions(administrator=True))
-    async def arkon(self, interaction: nextcord.Interaction):
+    async def arkon(self, _interaction: nextcord.Interaction):
         pass
 
     @arkon.subcommand(description="Send a remote rcon command.")
