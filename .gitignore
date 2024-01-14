@@ -3,5 +3,5 @@
 *.pyc
 *.json
 cogs_dev/*
-
-!data/config.json
+logs/*
+data/*

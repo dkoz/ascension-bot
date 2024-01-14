@@ -3,6 +3,7 @@ import os
 import nextcord
 from nextcord.ext import commands
 from util.arkon_async import ArkonClient
+import datetime
 
 class ARKRconCog(commands.Cog):
     def __init__(self, bot):
@@ -69,6 +70,26 @@ class ARKRconCog(commands.Cog):
         await interaction.response.send_message(f"Broadcasted message: {message}\nServer response: {response}")
 
     @broadcast.on_autocomplete("server")
+    async def on_autocomplete_broadcast(self, interaction: nextcord.Interaction, current: str):
+        await self.autocomplete_server(interaction, current)
+
+    @arkon.subcommand(description="Get the game log from an ARK server.")
+    async def getgamelog(self, interaction: nextcord.Interaction, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
+        log_content = await self.rcon_command(server, "GetGameLog")
+        if not log_content or "Error" in log_content:
+            await interaction.response.send_message(f"Failed to get game log: {log_content}")
+            return
+
+        file_name = f"{server}_gamelog_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        file_path = os.path.join("logs", file_name)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, "w") as file:
+            file.write(log_content)
+
+        with open(file_path, "rb") as file:
+            await interaction.response.send_message("Here is the game log:", file=nextcord.File(file, file_name))
+
+    @getgamelog.on_autocomplete("server")
     async def on_autocomplete_broadcast(self, interaction: nextcord.Interaction, current: str):
         await self.autocomplete_server(interaction, current)
 
