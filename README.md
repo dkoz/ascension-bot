@@ -27,6 +27,8 @@ If you need support feel free to join the [discord](https://discord.gg/3HUq8cJSr
 - **Ticket System**:
   - Create a ticket channel that will allow users to click a button to open a ticket as a thread.
   - Set a log channel where new tickets will be announced to for staff.
+- **Admin System**: Provides a list of administrative commands for server moderation.
+- **Embed System**: Enables the creation of custom, visually appealing embeds in Discord channels for announcements, rules, or information sharing.
 
 ## Installation
 For detailed installation instructions, please refer to our [git wiki](https://github.com/dkoz/ascension-bot/wiki). Specific instructions for [Linux](https://github.com/dkoz/ascension-bot/wiki/Linux-Installation) and [Windows](https://github.com/dkoz/ascension-bot/wiki/Windows-Installation) can be found at their respective links.
