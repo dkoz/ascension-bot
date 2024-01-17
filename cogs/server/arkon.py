@@ -2,7 +2,7 @@ import json
 import os
 import nextcord
 from nextcord.ext import commands
-from util.arkon_async import ArkonClient
+from gamercon_async import GameRCON
 import datetime
 
 class ARKRconCog(commands.Cog):
@@ -22,7 +22,7 @@ class ARKRconCog(commands.Cog):
             return f"Server '{server_name}' not found."
 
         try:
-            async with ArkonClient(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
+            async with GameRCON(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
                 return await ac.send(command)
         except Exception as error:
             return f"Error sending command: {error}"
