@@ -1,6 +1,6 @@
 nextcord==2.6.0
 python-dotenv==1.0.0
-aiohttp==3.9.0
+aiohttp==3.9.2
 aiocache==0.12.2
 py-dactyl==2.0.4
 gamercon-async==1.0.6
