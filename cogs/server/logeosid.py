@@ -14,7 +14,7 @@ class LogEOSIDCog(commands.Cog):
         self.rcon_cooldown = 320
 
     def load_config(self):
-        config_path = os.path.join('data', 'config.json')
+        config_path = 'config.json'
         with open(config_path) as config_file:
             config = json.load(config_file)
             self.servers = config["RCON_SERVERS"]

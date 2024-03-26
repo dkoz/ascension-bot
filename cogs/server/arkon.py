@@ -11,7 +11,7 @@ class ARKRconCog(commands.Cog):
         self.load_config()
 
     def load_config(self):
-        config_path = os.path.join('data', 'config.json')
+        config_path = 'config.json'
         with open(config_path) as config_file:
             config = json.load(config_file)
             self.servers = config["RCON_SERVERS"]
