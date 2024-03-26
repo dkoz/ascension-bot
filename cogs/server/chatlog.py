@@ -2,7 +2,7 @@ import json
 import os
 import nextcord
 from nextcord.ext import commands, tasks
-from config import CHATLOG_CHANNEL
+from settings import CHATLOG_CHANNEL
 from gamercon_async import GameRCON
 import asyncio
 

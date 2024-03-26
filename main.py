@@ -3,16 +3,16 @@ from nextcord.ext import commands
 import sys
 import traceback
 import os
-import config
+import settings
 import importlib.util
 
 intents = nextcord.Intents.all()
-bot = commands.Bot(command_prefix=config.BOT_PREFIX, intents=intents, help_command=None)
+bot = commands.Bot(command_prefix=settings.BOT_PREFIX, intents=intents, help_command=None)
 
 @bot.event
 async def on_ready():
     print(f'We have logged in as {bot.user}, created by koz')
-    activity = nextcord.Game(name=config.BOT_STATUS)
+    activity = nextcord.Game(name=settings.BOT_STATUS)
     await bot.change_presence(activity=activity)
 
 @bot.event
@@ -58,4 +58,4 @@ for entry in os.listdir("cogs"):
                     bot.load_extension(module_name)
 
 if __name__ == "__main__":
-    bot.run(config.BOT_TOKEN)
+    bot.run(settings.BOT_TOKEN)

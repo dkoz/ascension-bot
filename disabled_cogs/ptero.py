@@ -2,7 +2,7 @@ import nextcord
 from nextcord.ext import commands
 from pydactyl import PterodactylClient
 import logging
-from config import PTERO_URL, PTERO_API, PTERO_WHITELIST
+from settings import PTERO_URL, PTERO_API, PTERO_WHITELIST
 
 logging.basicConfig(level=logging.INFO)
 

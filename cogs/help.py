@@ -1,7 +1,7 @@
 import nextcord
 from nextcord.ext import commands
 from nextcord.ui import Button, View
-from config import BOT_PREFIX
+from settings import BOT_PREFIX
 
 class HelpCommand(commands.Cog):
     def __init__(self, bot):
