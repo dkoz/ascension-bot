@@ -1,8 +1,13 @@
 import json
-import os
 import nextcord
+import aiohttp
+import re
 from nextcord.ext import commands, tasks
-from settings import CHATLOG_CHANNEL
+from settings import (
+    CHATLOG_CHANNEL,
+    WEBHOOK_URL,
+    WEBHOOK_AVATAR
+)
 from gamercon_async import GameRCON
 import asyncio
 
@@ -11,6 +16,7 @@ class ChatLogCog(commands.Cog):
         self.bot = bot
         self.load_config()
         self.channel_id = CHATLOG_CHANNEL
+        self.session = aiohttp.ClientSession()
         self.filters = [
             'Server received, But no response!!',
             'AdminCmd',
@@ -47,16 +53,26 @@ class ChatLogCog(commands.Cog):
         except Exception as error:
             print(f'Error in {server_name}:', error)
             await asyncio.sleep(self.rcon_cooldown)
-
+      
     async def parse_message(self, server_name, res):
-        if "Server received, But no response!!" not in res:
-            channel = self.bot.get_channel(self.channel_id)
-            if channel and not any(filter_word in res for filter_word in self.filters):
-                formatted_message = f"**[{server_name}]** {res}"
-                await channel.send(formatted_message)
+        if "Server received, But no response!!" not in res and not any(filter_word in res for filter_word in self.filters):
+            match = re.search(r"(.+?) \((.+?)\): (.+)", res)
+            if match:
+                _, name_within_parentheses, message = match.groups()
+                webhook_name = f"{name_within_parentheses} ({server_name})"
+                await self.send_webhook(webhook_name, message)
+
+    async def send_webhook(self, name, message):
+        webhook = nextcord.Webhook.from_url(WEBHOOK_URL, session=self.session)
+        await webhook.send(
+            content=message,
+            username=name,
+            avatar_url=WEBHOOK_AVATAR
+        )
 
     def cog_unload(self):
         self.get_chat.cancel()
+        self.bot.loop.create_task(self.session.close())
 
 def setup(bot):
     bot.add_cog(ChatLogCog(bot))
