@@ -43,6 +43,7 @@ class TicketSystem(commands.Cog):
                     await message.edit(view=view)
 
     @commands.group(name="tickets", description="Get list of available tickets commands.", invoke_without_command=True)
+    @has_permissions(manage_channels=True)
     async def tickets(self, ctx):
         prefix = ctx.prefix
 
@@ -63,7 +64,7 @@ class TicketSystem(commands.Cog):
         button.callback = self.button_callback
         view = View(timeout=None)
         view.add_item(button)
-        embed = nextcord.Embed(title="Ticket System", description="Click the button below to create a new ticket.")
+        embed = nextcord.Embed(title="Support Tickets", description="Click the button below to create a new ticket.")
         message = await channel.send(embed=embed, view=view)
 
         self.data['buttons'].append({
@@ -104,7 +105,7 @@ class TicketSystem(commands.Cog):
                 if log_channel:
                     embed = nextcord.Embed(title="Ticket Opened", color=nextcord.Color.green())
                     embed.set_thumbnail(url=member.avatar.url)
-                    embed.add_field(name="Created By", value=f"{member.display_name}\n{member.mention}", inline=False)
+                    embed.add_field(name="Created By", value=f"{member.display_name}", inline=False)
                     embed.add_field(name="User ID", value=member.id, inline=False)
                     embed.add_field(name="Opened", value=interaction.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
                     embed.add_field(name="Ticket Name", value=thread.name, inline=False)
@@ -117,6 +118,7 @@ class TicketSystem(commands.Cog):
             view = View(timeout=None)
             view.add_item(close_button)
             embed = nextcord.Embed(title="Your Ticket", description="Support will be with you shortly. Click the button to close this ticket.")
+            embed.add_field(name="Explain your issue", value="Give us some details about your issue. It's hard for us to assist you if we don't know what's wrong.", inline=False)
             message = await thread.send(member.mention, embed=embed, view=view)
             await interaction.response.send_message("Ticket created!", ephemeral=True)
 
@@ -130,21 +132,20 @@ class TicketSystem(commands.Cog):
             self.save_config()
 
     async def close_ticket(self, interaction: nextcord.Interaction, thread: nextcord.Thread):
-        member = interaction.user
-        parent_channel = thread.parent
-
-        overwrites = parent_channel.overwrites_for(member)
-        overwrites.send_messages = False
-        overwrites.read_messages = False
-        await parent_channel.set_permissions(member, overwrite=overwrites, reason="Ticket closed")
+        await thread.edit(archived=True, locked=True)
 
         closing_embed = nextcord.Embed(title="Closed", description="Your ticket has been closed.", color=nextcord.Color.red())
-        await interaction.response.send_message(embed=closing_embed)
-
-        await thread.edit(archived=True, locked=True)
+        await interaction.response.send_message(embed=closing_embed, ephemeral=True)
 
         self.data['buttons'] = [button for button in self.data['buttons'] if button['message_id'] != thread.last_message_id]
         self.save_config()
+
+    @tickets.error
+    @setup_ticket.error
+    @setup_log.error
+    async def tickets_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("You don't have permission to use this command.")
 
 def setup(bot):
     bot.add_cog(TicketSystem(bot))

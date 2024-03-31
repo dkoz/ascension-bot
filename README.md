@@ -12,6 +12,7 @@ If you need support feel free to join the [discord](https://discord.gg/3HUq8cJSr
 - **Remote RCON**: Control the server(s) directly from Discord.
 - **Chat Logging**: 
   - Option to log in-game chat and commands to Discord.
+  - Cross chat from discord to all servers.
 - **Server Monitor**: 
   - Utilizes an EOS protocol to query the EOS API for information about your game server.
   - Embeds the information in a Discord channel of your choice.

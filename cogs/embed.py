@@ -23,6 +23,7 @@ class EmbedCog(commands.Cog):
             await ctx.send("You do not have the required permissions to use this command.")
 
     @commands.group(name="embed", aliases=["sk"], invoke_without_command=True)
+    @has_permissions(manage_messages=True)
     async def embed_group(self, ctx):
         prefix = ctx.prefix
 

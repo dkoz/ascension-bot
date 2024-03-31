@@ -8,6 +8,7 @@ class AdminCog(commands.Cog):
         self.bot = bot
 
     @commands.group(name="admin", description="Show list of admin commands.", invoke_without_command=True)
+    @has_permissions(administrator=True)
     async def admin(self, ctx):
         prefix = ctx.prefix
 
