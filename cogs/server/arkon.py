@@ -75,6 +75,7 @@ class ARKRconCog(commands.Cog):
 
     @arkon.subcommand(description="Get the game log from an ARK server.")
     async def getgamelog(self, interaction: nextcord.Interaction, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
+        await interaction.response.defer(ephemeral=True)
         log_content = await self.rcon_command(server, "GetGameLog")
         if not log_content or "Error" in log_content:
             await interaction.response.send_message(f"Failed to get game log: {log_content}")
@@ -87,7 +88,7 @@ class ARKRconCog(commands.Cog):
             file.write(log_content)
 
         with open(file_path, "rb") as file:
-            await interaction.response.send_message("Here is the game log:", file=nextcord.File(file, file_name))
+            await interaction.followup.send(file=nextcord.File(file, file_name))
 
     @getgamelog.on_autocomplete("server")
     async def on_autocomplete_broadcast(self, interaction: nextcord.Interaction, current: str):
