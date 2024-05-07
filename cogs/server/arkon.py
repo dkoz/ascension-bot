@@ -55,6 +55,42 @@ class ARKRconCog(commands.Cog):
     async def on_autocomplete_serverchat(self, interaction: nextcord.Interaction, current: str):
         await self.autocomplete_server(interaction, current)
 
+    @arkon.subcommand(description="Kick a player from the ARK server.")
+    async def kick(self, interaction: nextcord.Interaction, eos_id: str, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
+        response = await self.rcon_command(server, f"KickPlayer {eos_id}")
+        await interaction.response.send_message(f'Response: {response}')
+
+    @kick.on_autocomplete("server")
+    async def on_autocomplete_rcon(self, interaction: nextcord.Interaction, current: str):
+        await self.autocomplete_server(interaction, current)
+
+    @arkon.subcommand(description="Ban a player from the ARK server.")
+    async def ban(self, interaction: nextcord.Interaction, eos_id: str, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
+        response = await self.rcon_command(server, f"BanPlayer {eos_id}")
+        await interaction.response.send_message(f'Response: {response}')
+        
+    @ban.on_autocomplete("server")
+    async def on_autocomplete_rcon(self, interaction: nextcord.Interaction, current: str):
+        await self.autocomplete_server(interaction, current)
+        
+    @arkon.subcommand(description="Unban a player from the ARK server.")
+    async def unban(self, interaction: nextcord.Interaction, eos_id: str, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
+        response = await self.rcon_command(server, f"UnbanPlayer {eos_id}")
+        await interaction.response.send_message(f'Response: {response}')
+        
+    @unban.on_autocomplete("server")
+    async def on_autocomplete_rcon(self, interaction: nextcord.Interaction, current: str):
+        await self.autocomplete_server(interaction, current)
+        
+    @arkon.subcommand(description="Destroy all wild dinos.")
+    async def destroydinos(self, interaction: nextcord.Interaction, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
+        await self.rcon_command(server, "DestroyWildDinos")
+        await interaction.response.send_message(f'Destroyed all wild dinos on {server}.')
+        
+    @destroydinos.on_autocomplete("server")
+    async def on_autocomplete_rcon(self, interaction: nextcord.Interaction, current: str):
+        await self.autocomplete_server(interaction, current)
+
     @arkon.subcommand(description="Get a list of online players.")
     async def playerlist(self, interaction: nextcord.Interaction, server: str = nextcord.SlashOption(description="Select a server", autocomplete=True)):
         response = await self.rcon_command(server, "ListPlayers")
