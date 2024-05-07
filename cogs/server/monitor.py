@@ -1,7 +1,12 @@
 import nextcord
 from nextcord.ext import commands, tasks
 from util.eos import AsaProtocol
-from util.monitorlogic import save_info, load_info, update_info
+from util.monitorlogic import (
+    save_info,
+    load_info,
+    update_info,
+    clear_servers
+)
 
 class MonitorCog(commands.Cog):
     def __init__(self, bot):
@@ -49,7 +54,7 @@ class MonitorCog(commands.Cog):
     def cog_unload(self):
         self.update_server_status.cancel()
     
-    @nextcord.slash_command(description='Create looping embed of your server status.', default_member_permissions=nextcord.Permissions(administrator=True))
+    @nextcord.slash_command(name="postserver", description='Create looping embed of your server status.', default_member_permissions=nextcord.Permissions(administrator=True))
     async def postserver(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
         try:
             server_info = await self.asa_protocol.query(host, port)
@@ -72,6 +77,15 @@ class MonitorCog(commands.Cog):
         #embed.set_image(url="https://cdn.cloudflare.steamstatic.com/steam/apps/2399830/header.jpg?t=1699643475")
 
         return embed
+
+    @nextcord.slash_command(name="clearservers", description="Clear all server monitoring data.", default_member_permissions=nextcord.Permissions(administrator=True))
+    async def clearserverdata(self, interaction: nextcord.Interaction):
+        try:
+            clear_servers()
+            self.update_server_status.cancel()
+            await interaction.response.send_message("All server monitoring data has been cleared and updates have been halted.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"Failed to clear server data: {e}", ephemeral=True)
 
 def setup(bot):
     bot.add_cog(MonitorCog(bot))

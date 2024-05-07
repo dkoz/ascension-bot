@@ -59,3 +59,14 @@ def update_info(guild_id, channel_id, new_message_id, host, port):
 
     with open(filepath, 'w') as f:
         json.dump(data, f, indent=4)
+
+  
+def clear_servers():
+    directory = 'data'
+    filepath = os.path.join(directory, 'server_info.json')
+    
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    with open(filepath, 'w') as f:
+        json.dump({}, f, indent=4)
