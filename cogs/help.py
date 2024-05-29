@@ -19,8 +19,13 @@ class HelpCommand(commands.Cog):
             value='`/help` - Show the help menu you are looking at now.\n'
             '`/about` - Information about the bot.\n'
             '`/queryserver` - Queries a server for information.\n'
-            '`/postserver` - Create a live server tracker in selected channel.\n'
-            '`/arkon rcon` - Send a command to the Ark Server.\n'
+            '`/postserver` - Create a live server tracker in selected channel.\n',
+            inline=False
+        )
+
+        embed.add_field(
+            name="**Arkon Commands**",
+            value='`/arkon rcon` - Send a command to the Ark Server.\n'
             '`/arkon serverchat` - Send a chat message to the Ark Server.\n'
             '`/arkon broadcast` - Send a broadcast to the Ark Server.\n'
             '`/arkon ban` - Ban a player from the Ark server.\n'
