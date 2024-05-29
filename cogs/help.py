@@ -19,7 +19,8 @@ class HelpCommand(commands.Cog):
             value='`/help` - Show the help menu you are looking at now.\n'
             '`/about` - Information about the bot.\n'
             '`/queryserver` - Queries a server for information.\n'
-            '`/postserver` - Create a live server tracker in selected channel.\n',
+            '`/postserver` - Create a live server tracker in selected channel.\n'
+            '`/clearservers` - Clear the live server tracker database.\n',
             inline=False
         )
 
@@ -74,7 +75,7 @@ class HelpCommand(commands.Cog):
         embed.add_field(name="Creator", value="This bot was created by [Kozejin](https://kozejin.dev). Feel free to add `koz#1337` on discord if you have any questions.", inline=False)
 
         website_button = Button(label="Website", url="https://kozejin.dev", style=nextcord.ButtonStyle.link)
-        github_button = Button(label="GitHub", url="https://github.com/dkoz", style=nextcord.ButtonStyle.link)
+        github_button = Button(label="Patreon", url="https://www.patreon.com/palbotinn", style=nextcord.ButtonStyle.link)
         project_button = Button(label="Project", url="https://github.com/dkoz/ascension-bot", style=nextcord.ButtonStyle.link)
 
         view = View()
