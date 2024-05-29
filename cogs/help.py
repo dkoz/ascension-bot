@@ -15,7 +15,7 @@ class HelpCommand(commands.Cog):
         embed.set_footer(text="Created by Koz", icon_url=bot_avatar_url)
 
         embed.add_field(
-            name="**Default Commands**",
+            name="**Commands**",
             value='`/help` - Show the help menu you are looking at now.\n'
             '`/about` - Information about the bot.\n'
             '`/queryserver` - Queries a server for information.\n'
@@ -23,7 +23,12 @@ class HelpCommand(commands.Cog):
             '`/arkon rcon` - Send a command to the Ark Server.\n'
             '`/arkon serverchat` - Send a chat message to the Ark Server.\n'
             '`/arkon broadcast` - Send a broadcast to the Ark Server.\n'
-            '`/arkon playerlist` - Display a list of players in the Ark Server.\n',
+            '`/arkon ban` - Ban a player from the Ark server.\n'
+            '`/arkon unban` - Unban a player from the Ark server.\n'
+            '`/arkon kick` - Kick a player from the Ark Server.\n'
+            '`/arkon destroydinos` - Wipe all the wild dinos from the Ark server.\n'
+            '`/arkon playerlist` - Display a list of players in the Ark Server.\n'
+            '`/arkon getgamelog` - This will fetch the last 600 lines of the servers log file and upload it to discord.\n',
             inline=False
         )
 
