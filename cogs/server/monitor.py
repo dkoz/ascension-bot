@@ -54,7 +54,12 @@ class MonitorCog(commands.Cog):
     def cog_unload(self):
         self.update_server_status.cancel()
     
-    @nextcord.slash_command(name="postserver", description='Create looping embed of your server status.', default_member_permissions=nextcord.Permissions(administrator=True))
+    @nextcord.slash_command(
+        name="postserver",
+        description='Create looping embed of your server status.',
+        default_member_permissions=nextcord.Permissions(administrator=True),
+        dm_permission=False
+    )
     async def postserver(self, interaction: nextcord.Interaction, host: str, port: int, channel: nextcord.TextChannel):
         try:
             server_info = await self.asa_protocol.query(host, port)
@@ -78,7 +83,12 @@ class MonitorCog(commands.Cog):
 
         return embed
 
-    @nextcord.slash_command(name="clearservers", description="Clear all server monitoring data.", default_member_permissions=nextcord.Permissions(administrator=True))
+    @nextcord.slash_command(
+        name="clearservers",
+        description="Clear all server monitoring data.",
+        default_member_permissions=nextcord.Permissions(administrator=True),
+        dm_permission=False
+    )
     async def clearserverdata(self, interaction: nextcord.Interaction):
         try:
             clear_servers()

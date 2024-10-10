@@ -13,7 +13,11 @@ class ServerStatusCog(commands.Cog):
         self.asa_protocol = AsaProtocol(self.client_id, self.client_secret, self.deployment_id, self.epic_api)
 
     # Looking up servers
-    @nextcord.slash_command(description='Displays the status of a server.', default_member_permissions=nextcord.Permissions(administrator=True))
+    @nextcord.slash_command(
+        description='Displays the status of a server.',
+        default_member_permissions=nextcord.Permissions(administrator=True),
+        dm_permission=False
+    )
     async def queryserver(self, interaction: nextcord.Interaction, host: str, port: int):
         try:
             server_info = await self.asa_protocol.query(host, port)

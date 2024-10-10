@@ -31,7 +31,11 @@ class ARKRconCog(commands.Cog):
         choices = [server for server in self.servers if current.lower() in server.lower()]
         await interaction.response.send_autocomplete(choices)
     
-    @nextcord.slash_command(description="Main ARK server command.", default_member_permissions=nextcord.Permissions(administrator=True))
+    @nextcord.slash_command(
+        description="Main ARK server command.",
+        default_member_permissions=nextcord.Permissions(administrator=True),
+        dm_permission=False
+    )
     async def arkon(self, _interaction: nextcord.Interaction):
         pass
 
