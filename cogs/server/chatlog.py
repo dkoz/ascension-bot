@@ -16,7 +16,6 @@ class ChatLogCog(commands.Cog):
         self.bot = bot
         self.load_config()
         self.channel_id = CHATLOG_CHANNEL
-        self.session = aiohttp.ClientSession()
         self.filters = [
             'Server received, But no response!!',
             'AdminCmd',
@@ -30,7 +29,11 @@ class ChatLogCog(commands.Cog):
             'froze'
         ]
         self.rcon_cooldown = 320
+        self.session = None
         self.get_chat.start()
+
+    async def cog_load(self):
+        self.session = aiohttp.ClientSession()
 
     def load_config(self):
         config_path = 'config.json'
@@ -41,6 +44,8 @@ class ChatLogCog(commands.Cog):
     @tasks.loop(seconds=1)
     async def get_chat(self):
         await self.bot.wait_until_ready()
+        if not self.session:
+            self.session = aiohttp.ClientSession()
         for server_name in self.servers:
             await self.send_rcon_command(server_name, "GetChat")
 
@@ -70,9 +75,10 @@ class ChatLogCog(commands.Cog):
             avatar_url=WEBHOOK_AVATAR
         )
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.get_chat.cancel()
-        self.bot.loop.create_task(self.session.close())
+        if self.session:
+            await self.session.close()
 
 def setup(bot):
     bot.add_cog(ChatLogCog(bot))
