@@ -38,4 +38,8 @@ class ServerStatusCog(commands.Cog):
         return embed
 
 def setup(bot):
-    bot.add_cog(ServerStatusCog(bot))
+    cog = ServerStatusCog(bot)
+    bot.add_cog(cog)
+    if not hasattr(bot, 'all_slash_commands'):
+        bot.all_slash_commands = []
+    bot.all_slash_commands.extend([cog.queryserver])

@@ -98,4 +98,8 @@ class MonitorCog(commands.Cog):
             await interaction.response.send_message(f"Failed to clear server data: {e}", ephemeral=True)
 
 def setup(bot):
-    bot.add_cog(MonitorCog(bot))
+    cog = MonitorCog(bot)
+    bot.add_cog(cog)
+    if not hasattr(bot, 'all_slash_commands'):
+        bot.all_slash_commands = []
+    bot.all_slash_commands.extend([cog.postserver, cog.clearserverdata])

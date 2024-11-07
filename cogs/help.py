@@ -3,50 +3,82 @@ from nextcord.ext import commands
 from nextcord.ui import Button, View
 from settings import BOT_PREFIX
 
+class HelpView(View):
+    def __init__(self, bot):
+        super().__init__()
+        self.bot = bot
+        self.current_page = 0
+
+    async def generate_help_embed(self):
+        embed = nextcord.Embed(
+            title="Help Menu",
+            description="List of all available commands.",
+            color=nextcord.Color.blue(),
+        )
+        
+        commands_with_paths = []
+        for cmd in self.bot.all_slash_commands:
+            if hasattr(cmd, 'children') and cmd.children:
+                for subcmd in cmd.children.values():
+                    commands_with_paths.append((f"{cmd.name} {subcmd.name}", subcmd))
+            elif not hasattr(cmd, 'children') or not cmd.children:
+                commands_with_paths.append((cmd.name, cmd))
+
+        commands_with_paths.sort(key=lambda x: x[0])
+        total_pages = (len(commands_with_paths) - 1) // 9 + 1
+        
+        embed.set_footer(
+            text=f"Page {self.current_page + 1}/{total_pages}"
+        )
+
+        start = self.current_page * 9
+        end = min(start + 9, len(commands_with_paths))
+
+        for cmd_path, command in commands_with_paths[start:end]:
+            embed.add_field(
+                name=f"`/{cmd_path}`",
+                value=command.description or "No description",
+                inline=True,
+            )
+        return embed
+
+    @nextcord.ui.button(label="Previous", style=nextcord.ButtonStyle.blurple)
+    async def previous_button_callback(self, button, interaction):
+        if self.current_page > 0:
+            self.current_page -= 1
+            await self.update_help_message(interaction)
+
+    @nextcord.ui.button(label="Next", style=nextcord.ButtonStyle.blurple)
+    async def next_button_callback(self, button, interaction):
+        commands_with_paths = []
+        for cmd in self.bot.all_slash_commands:
+            if hasattr(cmd, 'children') and cmd.children:
+                for subcmd in cmd.children.values():
+                    commands_with_paths.append((f"{cmd.name} {subcmd.name}", subcmd))
+            elif not hasattr(cmd, 'children') or not cmd.children:
+                commands_with_paths.append((cmd.name, cmd))
+
+        if (self.current_page + 1) * 9 < len(commands_with_paths):
+            self.current_page += 1
+            await self.update_help_message(interaction)
+
+    async def update_help_message(self, interaction):
+        embed = await self.generate_help_embed()
+        await interaction.response.edit_message(embed=embed, view=self)
+
 class HelpCommand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @nextcord.slash_command(description="Shows a list of available commands")
+    @nextcord.slash_command(description="Shows a list of available commands.")
     async def help(self, interaction: nextcord.Interaction):
-        bot_avatar_url = self.bot.user.avatar.url
-
-        embed = nextcord.Embed(title="Help Menu", description="List of commands for Ark Dev Bot", color=nextcord.Color.blue())
-        embed.set_footer(text="Created by Koz", icon_url=bot_avatar_url)
-
-        embed.add_field(
-            name="**Commands**",
-            value='`/help` - Show the help menu you are looking at now.\n'
-            '`/about` - Information about the bot.\n'
-            '`/queryserver` - Queries a server for information.\n'
-            '`/postserver` - Create a live server tracker in selected channel.\n'
-            '`/clearservers` - Clear the live server tracker database.\n',
-            inline=False
-        )
-
-        embed.add_field(
-            name="**Arkon Commands**",
-            value='`/arkon rcon` - Send a command to the Ark Server.\n'
-            '`/arkon serverchat` - Send a chat message to the Ark Server.\n'
-            '`/arkon broadcast` - Send a broadcast to the Ark Server.\n'
-            '`/arkon ban` - Ban a player from the Ark server.\n'
-            '`/arkon unban` - Unban a player from the Ark server.\n'
-            '`/arkon kick` - Kick a player from the Ark Server.\n'
-            '`/arkon destroydinos` - Wipe all the wild dinos from the Ark server.\n'
-            '`/arkon playerlist` - Display a list of players in the Ark Server.\n'
-            '`/arkon getgamelog` - This will fetch the last 600 lines of the servers log file and upload it to discord.\n',
-            inline=False
-        )
-
-        embed.add_field(
-            name="**Profile Commands**",
-            value='`/link` - Link your `SteamID` or `EOS ID` to the bot. \n'
-            '`/me` - Shows you profile with link information.\n'
-            '`/unlink` - Remove your data from the bot.\n'
-            '`/find` - Search the bots database for your `EOS ID`',
-            inline=False
-        )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        try:
+            await interaction.response.defer(ephemeral=True)
+            view = HelpView(self.bot)
+            embed = await view.generate_help_embed()
+            await interaction.followup.send(embed=embed, view=view)
+        except Exception as e:
+            await interaction.followup.send(f"Error in help command: {e}")
 
     # This will be used to list commands not available as application slash commands.
     # Only administators will be able to use this command.

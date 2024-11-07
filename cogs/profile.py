@@ -119,4 +119,13 @@ class LinkAccountCog(commands.Cog):
         self.save_linked_accounts()
 
 def setup(bot):
-    bot.add_cog(LinkAccountCog(bot))
+    cog = LinkAccountCog(bot)
+    bot.add_cog(cog)
+    if not hasattr(bot, 'all_slash_commands'):
+        bot.all_slash_commands = []
+    bot.all_slash_commands.extend([
+        cog.link,
+        cog.unlink,
+        cog.me,
+        cog.find
+    ])

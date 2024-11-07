@@ -135,4 +135,8 @@ class ARKRconCog(commands.Cog):
         await self.autocomplete_server(interaction, current)
 
 def setup(bot):
-    bot.add_cog(ARKRconCog(bot))
+    cog = ARKRconCog(bot)
+    bot.add_cog(cog)
+    if not hasattr(bot, 'all_slash_commands'):
+        bot.all_slash_commands = []
+    bot.all_slash_commands.extend([cog.arkon])
