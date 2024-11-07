@@ -132,10 +132,12 @@ class TicketSystem(commands.Cog):
             self.save_config()
 
     async def close_ticket(self, interaction: nextcord.Interaction, thread: nextcord.Thread):
+        if not thread.archived:
+            await interaction.response.send_message(
+                embed=nextcord.Embed(title="Closed", description="Your ticket has been closed.", color=nextcord.Color.red()),
+                ephemeral=True
+            )
         await thread.edit(archived=True, locked=True)
-
-        closing_embed = nextcord.Embed(title="Closed", description="Your ticket has been closed.", color=nextcord.Color.red())
-        await interaction.response.send_message(embed=closing_embed, ephemeral=True)
 
         self.data['buttons'] = [button for button in self.data['buttons'] if button['message_id'] != thread.last_message_id]
         self.save_config()
