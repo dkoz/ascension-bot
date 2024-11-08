@@ -5,6 +5,9 @@ import traceback
 import os
 import settings
 import importlib.util
+from util.errorhandling import setup_logging
+
+setup_logging()
 
 intents = nextcord.Intents.all()
 bot = commands.Bot(command_prefix=settings.BOT_PREFIX, intents=intents, help_command=None)
