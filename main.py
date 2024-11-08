@@ -5,6 +5,7 @@ import traceback
 import os
 import settings
 import importlib.util
+import logging
 from util.errorhandling import setup_logging
 
 setup_logging()
@@ -14,17 +15,19 @@ bot = commands.Bot(command_prefix=settings.BOT_PREFIX, intents=intents, help_com
 
 @bot.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}, created by koz')
+    print(f"Logged in as {bot.user.name} (ID: {bot.user.id})")
+    print(f"Connected to {len(bot.guilds)} guilds and {len(set(bot.get_all_members()))} members.")
+    print(f"Invite URL: {nextcord.utils.oauth_url(bot.user.id)}")
     activity = nextcord.Game(name=settings.BOT_STATUS)
     await bot.change_presence(activity=activity)
 
 @bot.event
 async def on_guild_join(guild):
-    print(f"Joined guild: {guild.name} (ID: {guild.id})")
+    logging.info(f"Joined guild: {guild.name} (ID: {guild.id})")
 
 @bot.event
 async def on_guild_remove(guild):
-    print(f"Left guild: {guild.name} (ID: {guild.id})")
+    logging.info(f"Left guild: {guild.name} (ID: {guild.id})")
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -37,7 +40,7 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandInvokeError) and isinstance(error.original, nextcord.Forbidden):
         await ctx.send("I lack the necessary permissions to perform this action.")
     else:
-        print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+        logging.info(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def has_setup_function(module_name):

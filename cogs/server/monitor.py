@@ -7,6 +7,7 @@ from util.monitorlogic import (
     update_info,
     clear_servers
 )
+import logging
 
 class MonitorCog(commands.Cog):
     def __init__(self, bot):
@@ -23,7 +24,7 @@ class MonitorCog(commands.Cog):
     # Time before each server querty.
     @tasks.loop(minutes=5)
     async def update_server_status(self):
-        print(f"Fetching server information.")
+        logging.info(f"Fetching server information.")
         for guild in self.bot.guilds:
             guild_info_list = load_info(guild.id)
             if guild_info_list:
@@ -43,9 +44,9 @@ class MonitorCog(commands.Cog):
                                 new_message = await channel.send(embed=embed)
                                 update_info(guild.id, channel.id, new_message.id, guild_info['server']['host'], guild_info['server']['port'])
                             except Exception as e:
-                                print(f"Error reposting server status for guild {guild.id}: {e}")
+                                logging.error(f"Error reposting server status for guild {guild.id}: {e}")
                         except Exception as e:
-                            print(f"Error updating server status for guild {guild.id}: {e}")
+                            logging.error(f"Error updating server status for guild {guild.id}: {e}")
 
     @update_server_status.before_loop
     async def before_update_server_status(self):

@@ -10,6 +10,7 @@ from settings import (
 )
 from gamercon_async import GameRCON
 import asyncio
+import logging
 
 class ChatLogCog(commands.Cog):
     def __init__(self, bot):
@@ -56,7 +57,7 @@ class ChatLogCog(commands.Cog):
                 response = await ac.send(command)
                 await self.parse_message(server_name, response)
         except Exception as error:
-            print(f'Error in {server_name}:', error)
+            logging.error(f'Error in {server_name}:', error)
             await asyncio.sleep(self.rcon_cooldown)
       
     async def parse_message(self, server_name, res):

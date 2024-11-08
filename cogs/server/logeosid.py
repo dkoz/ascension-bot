@@ -4,6 +4,7 @@ from gamercon_async import GameRCON
 import asyncio
 import os
 import json
+import logging
 
 class LogEOSIDCog(commands.Cog):
     def __init__(self, bot):
@@ -37,7 +38,7 @@ class LogEOSIDCog(commands.Cog):
                 player_data = self.extract_player_data(response)
                 return player_data
         except Exception as e:
-            print(f"Error fetching player data from {server_name}: {e}")
+            logging.error(f"Error fetching player data from {server_name}: {e}")
             await asyncio.sleep(self.rcon_cooldown)
             return {}
 

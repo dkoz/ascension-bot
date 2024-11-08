@@ -4,6 +4,7 @@ from nextcord.ext import commands
 from gamercon_async import GameRCON
 from settings import CHATLOG_CHANNEL
 import asyncio
+import logging
 
 class CrossChatCog(commands.Cog):
     def __init__(self, bot):
@@ -32,9 +33,9 @@ class CrossChatCog(commands.Cog):
                 async with GameRCON(server_details["RCON_HOST"], server_details["RCON_PORT"], server_details["RCON_PASS"]) as ac:
                     server_chat_command = f"ServerChat {message}"
                     await ac.send(server_chat_command)
-                    print(f"Message sent to {server_name}: {message}")
+                    logging.info(f"Message sent to {server_name}: {message}")
             except Exception as e:
-                print(f"Failed to send message to {server_name}: {e}")
+                logging.error(f"Failed to send message to {server_name}: {e}")
 
 def setup(bot):
     bot.add_cog(CrossChatCog(bot))
