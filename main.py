@@ -3,7 +3,7 @@ from nextcord.ext import commands
 import sys
 import traceback
 import os
-import settings
+import util.settings as settings
 import importlib.util
 import logging
 from util.errorhandling import setup_logging

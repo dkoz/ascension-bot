@@ -3,7 +3,7 @@ import nextcord
 import aiohttp
 import re
 from nextcord.ext import commands, tasks
-from settings import (
+from util.settings import (
     CHATLOG_CHANNEL,
     WEBHOOK_URL,
     WEBHOOK_AVATAR
