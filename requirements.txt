@@ -1,5 +1,5 @@
 nextcord==2.6.0
 python-dotenv==1.0.1
-aiohttp==3.10.10
+aiohttp==3.10.11
 aiocache==0.12.3
 gamercon-async==1.0.7
