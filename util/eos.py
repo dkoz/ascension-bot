@@ -68,7 +68,7 @@ class AsaProtocol:
                 return data['access_token']
 
     async def query_server_info(self, access_token, host, port):
-        url = f"{self.epic_api}/matchmaking/v1/{self.deployment_id}/filter"
+        url = f"{self.epic_api}/wildcard/matchmaking/v1/{self.deployment_id}/filter"
         headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
