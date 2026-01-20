@@ -29,7 +29,7 @@ class ChatLogCog(commands.Cog):
             'RCON: Not connected',
             'froze'
         ]
-        self.rcon_cooldown = 320
+        self.rcon_cooldown = 120
         self.session = None
         self.get_chat.start()
 
@@ -52,13 +52,22 @@ class ChatLogCog(commands.Cog):
 
     async def send_rcon_command(self, server_name, command):
         server = self.servers[server_name]
-        try:
-            async with GameRCON(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
-                response = await ac.send(command)
-                await self.parse_message(server_name, response)
-        except Exception as error:
-            logging.error(f'Error in {server_name}:', error)
-            await asyncio.sleep(self.rcon_cooldown)
+        max_retries = 3
+        base_delay = 5
+        
+        for attempt in range(max_retries):
+            try:
+                async with GameRCON(server["RCON_HOST"], server["RCON_PORT"], server["RCON_PASS"]) as ac:
+                    response = await ac.send(command)
+                    await self.parse_message(server_name, response)
+                    return
+            except Exception as error:
+                logging.error(f'Error in {server_name} (attempt {attempt + 1}/{max_retries}):', error)
+                if attempt < max_retries - 1:
+                    delay = base_delay * (2 ** attempt)
+                    await asyncio.sleep(delay)
+                else:
+                    await asyncio.sleep(self.rcon_cooldown)
       
     async def parse_message(self, server_name, res):
         if "Server received, But no response!!" not in res and not any(filter_word in res for filter_word in self.filters):
